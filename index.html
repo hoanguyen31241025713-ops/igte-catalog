@@ -11,73 +11,71 @@
         
         /* Header */
         header { background: var(--white); padding: 30px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .logo-text { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; }
+        .logo-text { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; }
         
         /* Filter Bar */
-        .controls-wrapper { max-width: 1200px; margin: 20px auto; padding: 0 20px; text-align: center; }
-        .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .filter-btn { padding: 10px 22px; border: 1px solid #e2e8f0; background: var(--white); color: var(--text-sub); border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .controls-wrapper { max-width: 1200px; margin: 25px auto; padding: 0 20px; text-align: center; }
+        .filter-container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .filter-btn { padding: 12px 24px; border: 1px solid #e2e8f0; background: var(--white); color: var(--text-sub); border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
 
         /* Grid Layout */
-        .main-content { max-width: 1200px; margin: auto; padding: 20px 20px 80px; min-height: 500px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .main-content { max-width: 1200px; margin: auto; padding: 0 20px 80px; min-height: 500px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
         
         /* Card Style */
-        .card { background: var(--white); border-radius: 20px; overflow: hidden; transition: 0.3s; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .card { background: var(--white); border-radius: 16px; overflow: hidden; transition: 0.3s; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px rgba(0,0,0,0.1); }
         
-        .img-container { width: 100%; height: 350px; background: #e2e8f0; position: relative; overflow: hidden; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .card:hover .card-img { transform: scale(1.05); }
-        .badge-country { position: absolute; top: 15px; right: 15px; background: rgba(15, 23, 42, 0.85); color: white; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; z-index: 2; }
+        .img-container { width: 100%; height: 320px; background: #f1f5f9; position: relative; overflow: hidden; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-country { position: absolute; top: 15px; right: 15px; background: rgba(30, 41, 59, 0.9); color: white; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; z-index: 2; }
 
-        .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .status-tag { color: #059669; background: #ecfdf5; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; width: fit-content; }
-        .teacher-name { font-size: 1.4rem; font-weight: 700; margin: 0 0 12px 0; color: #1e293b; }
-        .cert-container { margin-top: auto; }
-        .cert-tag { font-size: 11px; background: #f1f5f9; color: #475569; padding: 5px 12px; border-radius: 6px; font-weight: 600; margin: 0 5px 5px 0; display: inline-block; border: 1px solid #e2e8f0; }
+        .card-body { padding: 20px; flex-grow: 1; }
+        .status-tag { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        .status-available { color: #059669; background: #ecfdf5; }
+        .status-pending { color: #d97706; background: #fffbeb; }
+
+        .teacher-name { font-size: 1.5rem; font-weight: 700; margin: 0 0 15px 0; color: #1e293b; }
+        .cert-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .cert-tag { font-size: 11px; background: #f8fafc; color: #64748b; padding: 5px 10px; border-radius: 6px; font-weight: 600; border: 1px solid #e2e8f0; }
 
         /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: var(--white); max-width: 1000px; margin: 40px auto; border-radius: 24px; display: grid; grid-template-columns: 1.2fr 0.8fr; overflow: hidden; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
-        .modal-left { padding: 30px; }
-        .modal-right { background: #f8fafc; padding: 30px; border-left: 1px solid #e2e8f0; }
-        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 35px; cursor: pointer; color: var(--text-sub); z-index: 11; line-height: 1; transition: 0.2s; }
-        .close-btn:hover { color: var(--text); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); z-index: 1000; overflow-y: auto; padding: 20px; align-items: center; justify-content: center; }
+        .modal-content { background: var(--white); max-width: 1000px; width: 100%; margin: 20px auto; border-radius: 24px; display: grid; grid-template-columns: 1.2fr 0.8fr; overflow: hidden; position: relative; }
+        .modal-left { padding: 40px; }
+        .modal-right { background: #f8fafc; padding: 40px; border-left: 1px solid #f1f5f9; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 16px; margin-bottom: 25px; overflow: hidden; }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 30px; cursor: pointer; color: #94a3b8; z-index: 10; }
 
-        /* Form */
-        input, textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.3s; }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; background: white; }
-        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.3s; }
-        .submit-btn:hover { background: #1d4ed8; }
+        /* Form elements */
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+        input, textarea { width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; background: #fff; }
+        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.3s; margin-top: 10px; }
+        .submit-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
 
-        #loading { text-align: center; padding: 50px; color: var(--text-sub); font-weight: 600; font-size: 1.1rem; }
+        #loading { text-align: center; padding: 100px; font-weight: 600; color: var(--text-sub); }
 
-        @media (max-width: 850px) { .modal-content { grid-template-columns: 1fr; margin: 10px auto; } .modal-right { border-left: none; border-top: 1px solid #e2e8f0; } }
+        @media (max-width: 850px) { .modal-content { grid-template-columns: 1fr; } .modal-right { border-left: none; border-top: 1px solid #f1f5f9; } }
     </style>
 </head>
 <body>
 
 <header>
     <h1 class="logo-text">Global Teacher Catalog</h1>
-    <p style="color: var(--text-sub); margin-top: 5px;">Hệ thống nguồn lực giáo viên quốc tế iGT HCMC</p>
+    <p style="color: var(--text-sub); margin-top: 8px; font-weight: 500;">Hệ thống nguồn lực giáo viên quốc tế iGT HCMC</p>
 </header>
 
 <div class="main-content">
     <div class="controls-wrapper">
-        <div class="filter-container">
+        <div class="filter-container" id="filter-box">
             <button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button>
-            <button class="filter-btn" onclick="filterBy('Morocco', this)">Morocco</button>
-            <button class="filter-btn" onclick="filterBy('Algeria', this)">Algeria</button>
-            <button class="filter-btn" onclick="filterBy('Indonesia', this)">Indonesia</button>
-            <button class="filter-btn" onclick="filterBy('Egypt', this)">Egypt</button>
-            <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
         </div>
     </div>
     
-    <div id="loading">🔄 Đang tải dữ liệu từ Google Sheets...</div>
+    <div id="loading">🔄 Đang đồng bộ dữ liệu giáo viên...</div>
     <div id="grid" class="grid"></div>
 </div>
 
@@ -86,28 +84,36 @@
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <div class="modal-left">
             <div id="m-video" class="video-box"></div>
-            <h3 style="color: var(--primary); margin-bottom: 12px;">Kinh nghiệm & Bằng cấp</h3>
-            <div id="m-certs"></div>
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                <h4 style="margin: 0 0 8px 0; color: #334155;">Giới thiệu:</h4>
-                <p id="m-bio" style="color: var(--text-sub); line-height: 1.6; margin: 0; white-space: pre-line;"></p>
-            </div>
+            <h3 style="color: var(--primary); margin: 0 0 15px 0;">Kinh nghiệm & Bằng cấp</h3>
+            <div id="m-certs" style="margin-bottom: 25px;"></div>
+            <p id="m-bio" style="color: var(--text-sub); line-height: 1.7; font-size: 15px; margin: 0; white-space: pre-line; border-top: 1px solid #f1f5f9; padding-top: 20px;"></p>
         </div>
         <div class="modal-right">
-            <h2 style="margin-top:0; color: var(--primary);">Đặt lịch phỏng vấn</h2>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</p>
+            <h2 style="margin: 0 0 10px 0; font-size: 24px;">Đặt lịch phỏng vấn</h2>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 30px;">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</p>
             
             <form action="https://formspree.io/f/xjgglrrz" method="POST">
-                <input type="hidden" id="f-teacher" name="Teacher_Name">
+                <input type="hidden" id="f-teacher" name="Giao_Vien_Yeu_Cau">
                 
-                <label style="font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Trung tâm / Đối tác *</label>
-                <input type="text" name="Partner" required placeholder="Tên đơn vị của bạn">
+                <div class="form-group">
+                    <label>Trung tâm / Đối tác *</label>
+                    <input type="text" name="Don_Vi" required placeholder="Tên đơn vị của bạn">
+                </div>
                 
-                <label style="font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Số điện thoại *</label>
-                <input type="tel" name="Phone" required placeholder="09xx xxx xxx">
+                <div class="form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" name="Dien_Thoai" required placeholder="09xx xxx xxx">
+                </div>
+
+                <div class="form-group">
+                    <label>Khung giờ phỏng vấn mong muốn</label>
+                    <input type="text" name="Khung_Gio" placeholder="Ví dụ: Sáng thứ 3, 10h">
+                </div>
                 
-                <label style="font-size: 12px; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">Ghi chú thêm</label>
-                <textarea name="Note" rows="3" placeholder="Yêu cầu về kỹ năng sư phạm, độ tuổi học viên..."></textarea>
+                <div class="form-group">
+                    <label>Ghi chú thêm</label>
+                    <textarea name="Ghi_Chu" rows="3" placeholder="Yêu cầu về kỹ năng sư phạm, độ tuổi học viên..."></textarea>
+                </div>
                 
                 <button type="submit" class="submit-btn">XÁC NHẬN ĐẶT LỊCH</button>
             </form>
@@ -121,75 +127,71 @@
 
     async function init() {
         try {
-            // Thêm timestamp để tránh cache trình duyệt
             const res = await fetch(`${SHEET_URL}&t=${Date.now()}`);
-            if (!res.ok) throw new Error("Network response was not ok");
             const data = await res.text();
             
-            // Hàm tách CSV chuẩn (xử lý dấu phẩy trong ngoặc kép nếu có)
+            // Xử lý CSV chuẩn để không bị lệch cột bởi dấu phẩy trong Bio
             const rows = data.split(/\r?\n/).map(line => {
-                // Regex phức tạp để tách cột CSV chính xác
-                return line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(item => item.replace(/^"|"$/g, '').trim());
+                const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                return matches ? matches.map(m => m.replace(/^"|"$/g, '').trim()) : [];
             });
 
-            // Quan trọng: rows.slice(1) để bỏ qua hàng Tiêu đề (Hàng 1)
-            // Mapping đúng thứ tự cột trong Sheet:
-            // A=0: ID | B=1: Name | C=2: Country | D=3: Status | E=4: Img | F=5: Cert | G=6: Bio | H=7: Video
+            // Lấy từ hàng 2 (index 1) theo đúng cấu trúc ảnh Sheet
             teachers = rows.slice(1).map(col => {
-                // Kiểm tra nếu hàng không đủ dữ liệu thì bỏ qua
-                if(col.length < 2) return null; 
-                
+                if (col.length < 5) return null;
                 return {
                     id: col[0],
-                    name: col[1],       // Cột B
-                    country: col[2],    // Cột C
+                    name: col[1],
+                    country: col[2],
                     status: col[3] || "Sẵn sàng",
-                    img: col[4],        // Cột E (Ảnh)
+                    img: col[4],
                     cert: col[5] || "",
                     bio: col[6] || "",
-                    video: col[7] || "" // Cột H (Video)
+                    video: col[7] || ""
                 };
-            }).filter(t => t && t.name); // Lọc bỏ các hàng rỗng
+            }).filter(t => t && t.name);
+
+            // Tự động tạo nút lọc Quốc gia
+            const countries = [...new Set(teachers.map(t => t.country))];
+            const filterBox = document.getElementById('filter-box');
+            countries.forEach(c => {
+                if(c) filterBox.innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`;
+            });
 
             document.getElementById('loading').style.display = 'none';
             render(teachers);
         } catch (e) {
-            console.error(e);
-            document.getElementById('loading').innerHTML = "⚠️ Lỗi tải dữ liệu. Vui lòng kiểm tra link Google Sheet.";
+            document.getElementById('loading').innerHTML = "⚠️ Không thể kết nối dữ liệu. Hãy kiểm tra lại link Google Sheet.";
         }
     }
 
     function render(list) {
         const grid = document.getElementById('grid');
-        grid.innerHTML = list.map(t => `
+        grid.innerHTML = list.map(t => {
+            const statusClass = t.status.toLowerCase().includes('chờ') ? 'status-pending' : 'status-available';
+            const displayStatus = t.status.toLowerCase().includes('available') ? 'SẴN SÀNG' : t.status.toUpperCase();
+            
+            return `
             <div class="card" onclick="openModal('${t.id}')">
                 <div class="img-container">
-                    <img src="${t.img}" class="card-img" 
-                        onerror="this.onerror=null; this.src='https://via.placeholder.com/400x500?text=No+Image';">
+                    <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/400x600?text=iGT+Teacher'">
                     <div class="badge-country">${t.country}</div>
                 </div>
                 <div class="card-body">
-                    <div>
-                        <span class="status-tag">${t.status}</span>
-                        <h3 class="teacher-name">${t.name}</h3>
-                    </div>
+                    <span class="status-tag ${statusClass}">${displayStatus}</span>
+                    <h3 class="teacher-name">${t.name}</h3>
                     <div class="cert-container">
-                        ${t.cert.split(';').map(c => `<span class="cert-tag">${c.trim()}</span>`).slice(0, 3).join('')}
+                        ${t.cert.split(';').map(c => `<span class="cert-tag">${c.trim()}</span>`).join('')}
                     </div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     function filterBy(country, btn) {
-        // Cập nhật giao diện nút
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        // Lọc dữ liệu
-        const filtered = country === 'All' ? teachers : teachers.filter(t => 
-            t.country.trim().toLowerCase() === country.toLowerCase()
-        );
+        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country === country);
         render(filtered);
     }
 
@@ -197,48 +199,35 @@
         const t = teachers.find(x => x.id === id);
         if(!t) return;
         
-        // Điền thông tin vào Modal
         document.getElementById('f-teacher').value = t.name;
         document.getElementById('m-bio').innerText = t.bio;
         
-        // Render Bằng cấp dạng list
         document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => 
-            `<div style="display:flex; align-items:center; margin-bottom:8px; font-weight:600; color:#334155;">
-                <span style="width:4px; height:16px; background:var(--primary); margin-right:10px; border-radius:2px;"></span>
+            `<div style="display:flex; align-items:center; margin-bottom:10px; font-weight:600; color:#334155; font-size:15px;">
+                <span style="width:4px; height:18px; background:var(--primary); margin-right:12px; border-radius:2px;"></span>
                 ${c.trim()}
             </div>`
         ).join('');
         
-        // Xử lý Video Link (Hỗ trợ cả link thường và link embed)
-        let videoSrc = "";
-        const vLink = t.video;
-        if (vLink) {
-            if (vLink.includes("embed")) {
-                videoSrc = vLink;
-            } else if (vLink.includes("watch?v=")) {
-                const vId = vLink.split("v=")[1].split("&")[0];
-                videoSrc = `https://www.youtube.com/embed/${vId}`;
-            } else if (vLink.includes("youtu.be")) {
-                const vId = vLink.split("/").pop();
-                videoSrc = `https://www.youtube.com/embed/${vId}`;
-            }
-        }
+        let videoId = "";
+        if (t.video.includes("v=")) videoId = t.video.split("v=")[1].split("&")[0];
+        else if (t.video.includes("embed/")) videoId = t.video.split("embed/")[1];
+        else videoId = t.video.split("/").pop();
 
-        document.getElementById('m-video').innerHTML = videoSrc ? 
-            `<iframe width="100%" height="100%" src="${videoSrc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>` : 
-            `<div style="display:flex; justify-content:center; align-items:center; height:100%; color:white; background:#333;">Chưa có video giới thiệu</div>`;
+        document.getElementById('m-video').innerHTML = videoId ? 
+            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>` : 
+            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white;">Video đang cập nhật</div>`;
             
-        document.getElementById('modal').style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Khóa cuộn trang web
+        document.getElementById('modal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
-        document.getElementById('m-video').innerHTML = ''; // Xóa iframe để dừng video
-        document.body.style.overflow = 'auto'; // Mở lại cuộn
+        document.getElementById('m-video').innerHTML = '';
+        document.body.style.overflow = 'auto';
     }
 
-    // Chạy khi load trang
     init();
 </script>
 </body>
