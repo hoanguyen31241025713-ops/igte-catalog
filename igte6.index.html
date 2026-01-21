@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Selection Catalog - iGT</title>
+    <style>
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --secondary: #64748b; --success: #10b981; --warning: #f59e0b; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        
+        .container { max-width: 1200px; margin: auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: var(--primary); margin: 0; font-size: 2.2rem; }
+
+        /* Filter */
+        .filter-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; color: var(--secondary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Grid & Card Fix */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
+        
+        /* Căn giữa ảnh */
+        .img-container { width: 100%; height: 250px; overflow: hidden; background: #eceff1; display: flex; align-items: center; justify-content: center; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+
+        .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(30, 41, 59, 0.85); color: white; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; z-index: 2; backdrop-filter: blur(4px); }
+        
+        .card-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
+        .status-tag { display: inline-block; width: fit-content; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .status-available { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+
+        .card-body h3 { margin: 5px 0 2px 0; font-size: 1.2rem; color: #0f172a; }
+        
+        /* Thông tin bằng cấp bên ngoài card */
+        .cert-tags-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+        .cert-tag-small { background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid #e2e8f0; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: white; max-width: 1000px; margin: 20px auto; border-radius: 16px; position: relative; display: flex; flex-wrap: wrap; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); overflow: hidden; }
+        
+        .modal-left { flex: 1.2; min-width: 350px; padding: 30px; box-sizing: border-box; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 25px; }
+        .cert-item { border-left: 4px solid var(--primary); padding-left: 15px; margin-bottom: 12px; font-weight: 600; font-size: 15px; color: #334155; }
+
+        .modal-right { flex: 0.8; min-width: 320px; background: #f4f8ff; padding: 30px; box-sizing: border-box; border-left: 1px solid #e2e8f0; }
+        .label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+        .input, .textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; background: white; outline: none; font-size: 14px; }
+        .btn-submit { width: 100%; background: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #1d4ed8; }
+
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #94a3b8; z-index: 100; }
+
+        @media (max-width: 768px) { .modal-content { flex-direction: column; } .modal-right { border-radius: 0; border-left: none; border-top: 1px solid #e2e8f0; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Global Teacher Catalog</h1>
+        <p>Hệ thống nguồn lực giáo viên quốc tế iGT HCMC</p>
+    </header>
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button>
+        <button class="filter-btn" onclick="filterBy('Morocco', this)">Morocco</button>
+        <button class="filter-btn" onclick="filterBy('Algeria', this)">Algeria</button>
+        <button class="filter-btn" onclick="filterBy('Indonesia', this)">Indonesia</button>
+        <button class="filter-btn" onclick="filterBy('Egypt', this)">Egypt</button>
+        <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+</div>
+
+<div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div class="modal-left">
+            <div id="m-video" class="video-box"></div>
+            <h3 style="margin-top: 0; color: var(--primary);">Kinh nghiệm & Bằng cấp</h3>
+            <div id="m-certs"></div>
+            <p id="m-bio" style="color:#64748b; font-size:15px; margin-top:15px; line-height: 1.6;"></p>
+        </div>
+        <div class="modal-right">
+            <h2 style="color:var(--primary); margin-top:0; font-size: 24px;">Đặt lịch phỏng vấn</h2>
+            <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</p>
+            <form onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="f-teacher-id">
+                <label class="label">Trung tâm / Đối tác *</label>
+                <input type="text" id="f-center" class="input" required placeholder="Tên đơn vị của bạn">
+                <label class="label">Số điện thoại *</label>
+                <input type="tel" id="f-phone" class="input" required placeholder="09xx xxx xxx">
+                <label class="label">Khung giờ phỏng vấn mong muốn</label>
+                <input type="text" id="f-time" class="input" placeholder="Ví dụ: Sáng thứ 3, 10h">
+                <label class="label">Ghi chú thêm</label>
+                <textarea id="f-note" class="textarea" rows="3" placeholder="Yêu cầu về kỹ năng sư phạm, độ tuổi học viên..."></textarea>
+                <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const teachers = [
+        { id: 1, name: "Ms. Amina", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "CELTA, 4 năm kinh nghiệm, Thạc sĩ GD", bio: "Chuyên dạy giao tiếp cho người đi làm và tiếng Anh doanh nghiệp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 2, name: "Mr. Yassine", country: "Algeria", status: "Pending", img: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 8.0, Thạc sĩ Ngôn ngữ, TESOL", bio: "Kỹ năng sư phạm tốt, chuyên luyện thi IELTS học thuật.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 3, name: "Ms. Putri", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TESOL, Chuyên dạy trẻ em, TEFL", bio: "Năng động, sáng tạo trong việc tổ chức hoạt động lớp học vui nhộn.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 4, name: "Mr. Ahmed", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Bachelor of Arts, TEFL, 5 năm KN", bio: "Giọng chuẩn, tập trung sâu vào chỉnh sửa phát âm và ngữ pháp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 5, name: "Ms. Maria", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "LET Licensed, 7 năm kinh nghiệm, IELTS 7.5", bio: "Chuyên dạy tiếng Anh học thuật cho học sinh phổ thông.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 6, name: "Mr. Karim", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TOEFL 110, Kinh nghiệm QT, CELTA", bio: "Từng giảng dạy tại nhiều quốc gia, phong cách dạy hiện đại.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 7, name: "Ms. Leila", country: "Algeria", status: "Available", img: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "CELTA, TESOL, Bachelor Degree", bio: "Nhiệt tình, có phương pháp giúp học sinh lấy lại căn bản nhanh.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 8, name: "Mr. Budi", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 7.5, 3 năm Offline, TEFL", bio: "Chuyên dạy tiếng Anh giao tiếp và phản xạ cho người mới.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 9, name: "Ms. Fatma", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/712521/pexels-photo-712521.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Thạc sĩ Giáo dục, 10 năm KN", bio: "Có kinh nghiệm dày dặn tại các trường quốc tế lớn.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 10, name: "Mr. Paolo", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Bachelor of SE, TESOL, IELTS 8.0", bio: "Chuyên luyện thi chứng chỉ quốc tế cấp tốc.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 11, name: "Ms. Sarah", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TESOL, 5 năm dạy tại VN, CELTA", bio: "Am hiểu văn hóa và tâm lý học sinh Việt Nam.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 12, name: "Mr. Omar", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 8.5, Master in English", bio: "Chuyên các lớp Writing và Speaking chuyên sâu cho du học.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 13, name: "Ms. Dian", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Master of English, TEFL", bio: "Nền tảng học thuật vững chắc, phù hợp dạy khối chuyên.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 14, name: "Mr. Ali", country: "Algeria", status: "Available", img: "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TEFL, Native Accent, Bachelor", bio: "Giọng chuẩn bản xứ, phong thái chuyên nghiệp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+        { id: 15, name: "Ms. Joy", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Licensed Teacher, IELTS 8.0, TESOL", bio: "Nghiêm túc, kỷ luật và cam kết đầu ra cho học viên.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    ];
+
+    function render(data) {
+        document.getElementById('grid').innerHTML = data.map(t => {
+            const isPending = t.status === 'Pending';
+            const statusClass = isPending ? 'status-pending' : 'status-available';
+            const statusText = isPending ? 'Đang chờ xác nhận' : 'Sẵn sàng';
+            
+            // Xử lý danh sách bằng cấp để hiển thị nhãn nhỏ
+            const certTags = t.cert.split(',').map(c => `<span class="cert-tag-small">${c.trim()}</span>`).join('');
+
+            return `
+                <div class="card ${isPending ? 'disabled' : ''}" onclick="handleCardClick(${t.id})">
+                    <div class="badge-country">${t.country}</div>
+                    <div class="img-container">
+                        <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/400x500?text=iGT+Teacher'">
+                    </div>
+                    <div class="card-body">
+                        <span class="status-tag ${statusClass}">${statusText}</span>
+                        <h3>${t.name}</h3>
+                        <div class="cert-tags-container">
+                            ${certTags}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function handleCardClick(id) {
+        const t = teachers.find(x => x.id === id);
+        if (t.status === 'Pending') {
+            alert("Giáo viên này hiện đang có trung tâm khác đặt lịch. Vui lòng chọn giáo viên 'Sẵn sàng'!");
+            return;
+        }
+        openModal(id);
+    }
+
+    function openModal(id) {
+        const t = teachers.find(x => x.id === id);
+        document.getElementById('f-teacher-id').value = t.id;
+        document.getElementById('m-certs').innerHTML = t.cert.split(',').map(c => `<div class="cert-item">${c.trim()}</div>`).join('');
+        document.getElementById('m-bio').innerText = t.bio;
+        document.getElementById('m-video').innerHTML = `<iframe width="100%" height="100%" src="${t.video}" frameborder="0" allowfullscreen></iframe>`;
+        document.getElementById('modal').style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Khóa cuộn trang khi mở modal
+    }
+
+    function closeModal() { 
+        document.getElementById('modal').style.display = 'none'; 
+        document.getElementById('m-video').innerHTML = ''; 
+        document.body.style.overflow = 'auto';
+    }
+
+    function filterBy(country, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country === country);
+        render(filtered);
+    }
+
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById('f-teacher-id').value;
+        const center = document.getElementById('f-center').value;
+        const teacherIndex = teachers.findIndex(t => t.id == id);
+        teachers[teacherIndex].status = 'Pending';
+        alert(`Cảm ơn đối tác ${center}! Yêu cầu đã được gửi đến iGT. Trạng thái giáo viên sẽ được cập nhật tạm thời.`);
+        render(teachers);
+        closeModal();
+    }
+
+    render(teachers);
+</script>
+</body>
+</html>
