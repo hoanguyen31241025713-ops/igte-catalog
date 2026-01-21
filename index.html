@@ -11,13 +11,12 @@
         header { background: var(--white); padding: 30px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .logo-text { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; }
         
-        /* Bộ lọc 5 nước đúng như ảnh yêu cầu */
+        /* Đã bổ sung đủ 5 nút lọc */
         .controls-wrapper { max-width: 1200px; margin: 20px auto; padding: 0 20px; text-align: center; }
         .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .filter-btn { padding: 10px 22px; border: 1px solid #e2e8f0; background: var(--white); color: var(--text-sub); border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 
-        /* Danh sách giáo viên */
         .main-content { max-width: 1200px; margin: auto; padding: 20px 20px 80px; min-height: 500px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
@@ -33,7 +32,7 @@
         .teacher-name { font-size: 1.4rem; font-weight: 700; margin: 0 0 12px 0; color: #1e293b; }
         .cert-tag { font-size: 11px; background: #f1f5f9; color: #475569; padding: 5px 12px; border-radius: 6px; font-weight: 600; margin: 0 5px 5px 0; display: inline-block; }
 
-        /* Modal chi tiết */
+        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
         .modal-content { background: var(--white); max-width: 1000px; margin: 20px auto; border-radius: 24px; display: grid; grid-template-columns: 1.2fr 0.8fr; overflow: hidden; position: relative; }
         .modal-left { padding: 30px; }
@@ -45,7 +44,6 @@
         .submit-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
         
         #loading { text-align: center; padding: 50px; color: var(--text-sub); font-weight: 600; }
-
         @media (max-width: 850px) { .modal-content { grid-template-columns: 1fr; } .modal-right { border-left: none; border-top: 1px solid #e2e8f0; } }
     </style>
 </head>
@@ -63,8 +61,7 @@
             <button class="filter-btn" onclick="filterBy('Morocco', this)">Morocco</button>
             <button class="filter-btn" onclick="filterBy('Algeria', this)">Algeria</button>
             <button class="filter-btn" onclick="filterBy('Indonesia', this)">Indonesia</button>
-            <button class="filter-btn" onclick="filterBy('Egypt', this)">Egypt</button>
-            <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
+            <button class="filter-btn" onclick="filterBy('Egypt', this)">Egypt</button> <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
         </div>
     </div>
     
@@ -103,21 +100,21 @@
             const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
             const data = await res.text();
             
-            // Xử lý CSV: Tách dòng, tách cột chuẩn xác
+            // Xử lý CSV chuẩn để tránh lỗi dấu phẩy trong nội dung
             const rows = data.split(/\r?\n/).map(line => {
                 return line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(item => item.replace(/^"|"$/g, '').trim());
             });
 
-            // Bắt đầu lấy dữ liệu từ hàng 2 (index 1) để bỏ qua tiêu đề
+            // Bắt đầu lấy từ Hàng 2 (index 1) vì Hàng 1 là Tiêu đề
             teachers = rows.slice(1).map(col => ({
-                id: col[0],         // Cột A: id
-                name: col[1],       // Cột B: name
-                country: col[2],    // Cột C: country
-                status: col[3] || "Available", // Cột D: status
-                img: col[4],        // Cột E: img
-                cert: col[5] || "", // Cột F: cert
-                bio: col[6] || "",  // Cột G: bio
-                video: col[7] || "" // Cột H: video
+                id: col[0],         // Cột A: ID
+                name: col[1],       // Cột B: Name
+                country: col[2],    // Cột C: Country
+                status: col[3] || "Available", // Cột D: Status
+                img: col[4],        // Cột E: Img Link
+                cert: col[5] || "", // Cột F: Cert
+                bio: col[6] || "",  // Cột G: Bio
+                video: col[7] || "" // Cột H: Video Link
             })).filter(t => t.name && t.name !== "");
 
             document.getElementById('loading').style.display = 'none';
@@ -125,6 +122,7 @@
             render(teachers);
         } catch (e) {
             document.getElementById('loading').innerHTML = "⚠️ Lỗi kết nối dữ liệu Sheet.";
+            console.error(e);
         }
     }
 
@@ -149,7 +147,7 @@
     function filterBy(country, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country.toLowerCase() === country.toLowerCase());
+        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country.trim().toLowerCase() === country.toLowerCase());
         render(filtered);
     }
 
@@ -162,16 +160,15 @@
         document.getElementById('m-bio').innerText = t.bio;
         document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => `<div style="border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-weight: 600;">${c.trim()}</div>`).join('');
         
-        // Xử lý lấy ID video từ link YouTube ở cột H
         let vId = "";
         const vLink = t.video;
-        if(vLink.includes("v=")) vId = vLink.split("v=")[1].split("&")[0];
-        else if(vLink.includes("youtu.be/")) vId = vLink.split("/").pop();
-        else vId = vLink.split("/").pop().split("?")[0];
+        if(vLink && vLink.includes("v=")) vId = vLink.split("v=")[1].split("&")[0];
+        else if(vLink && vLink.includes("youtu.be/")) vId = vLink.split("/").pop();
+        else if(vLink) vId = vLink.split("/").pop().split("?")[0];
         
         document.getElementById('m-video').innerHTML = vId ? 
             `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
-            `<div style="color:white; text-align:center; padding-top:20%;">Đang cập nhật video giới thiệu</div>`;
+            `<div style="color:white; text-align:center; padding-top:20%;">Đang cập nhật video...</div>`;
             
         document.getElementById('modal').style.display = 'block';
         document.body.style.overflow = 'hidden';
