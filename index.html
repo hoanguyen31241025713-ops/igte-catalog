@@ -107,8 +107,8 @@
 </div>
 
 <script>
-    // Link CSV của bạn
-const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
+    // 1. Link CSV chuẩn của bạn
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
 
 let teachers = [];
 
@@ -116,9 +116,12 @@ async function loadData() {
     try {
         const response = await fetch(csvUrl);
         const data = await response.text();
-        const rows = data.split('\n').slice(1);
+        
+        // Chia hàng và bỏ hàng tiêu đề đầu tiên
+        const rows = data.split(/\r?\n/).slice(1);
         
         teachers = rows.map(row => {
+            // Tách cột bằng dấu phẩy, xử lý dấu ngoặc kép
             const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             return {
                 id: c[0]?.replace(/"/g, "").trim(),
@@ -130,12 +133,18 @@ async function loadData() {
                 bio: c[6]?.replace(/"/g, "").trim(),
                 video: c[7]?.replace(/"/g, "").trim()
             };
-        });
+        }).filter(t => t.name); // Bỏ các hàng trống
+
+        console.log("Dữ liệu đã tải:", teachers);
         renderGrid(teachers);
-    } catch (e) { console.error("Lỗi kết nối Sheet:", e); }
+    } catch (error) {
+        console.error("Lỗi kết nối Sheet:", error);
+        document.getElementById('teacher-grid').innerHTML = "<p>Đang cập nhật dữ liệu, vui lòng đợi trong giây lát...</p>";
+    }
 }
 
-loadData(); // Lệnh này giúp web lấy dữ liệu từ Sheet ngay khi mở trang
+// Gọi hàm tải dữ liệu
+loadData();
     function render(data) {
         document.getElementById('grid').innerHTML = data.map(t => {
             const isPending = t.status === 'Pending';
@@ -211,6 +220,7 @@ loadData(); // Lệnh này giúp web lấy dữ liệu từ Sheet ngay khi mở 
 </body>
 
 </html>
+
 
 
 
