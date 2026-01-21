@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Selection Catalog - iGT</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --secondary: #64748b; --success: #10b981; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); line-height: 1.6; }
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --secondary: #64748b; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
         .container { max-width: 1200px; margin: auto; }
         header { text-align: center; margin-bottom: 30px; }
         header h1 { color: var(--primary); margin: 0; font-size: 2.2rem; }
 
-        /* Filter */
+        /* Filter Section */
         .filter-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
-        .filter-btn { padding: 8px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; color: var(--secondary); }
+        .filter-btn { padding: 8px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--secondary); transition: 0.3s; }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; min-height: 300px; }
+        /* Teacher Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); }
-        .card.disabled { opacity: 0.6; cursor: not-allowed; }
+        .card.disabled { opacity: 0.6; pointer-events: none; }
 
-        .img-container { width: 100%; height: 280px; background: #f1f5f9; }
+        .img-container { width: 100%; height: 280px; background: #f1f5f9; overflow: hidden; }
         .card-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(30, 41, 59, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+        .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(30, 41, 59, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; z-index: 2; }
         .card-body { padding: 15px; flex-grow: 1; }
         .status-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
         .status-available { background: #dcfce7; color: #166534; }
@@ -33,15 +33,18 @@
         
         .cert-tag-small { display: inline-block; background: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px; border: 1px solid #e2e8f0; }
 
-        /* Modal */
+        /* Modal Popup */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto; }
-        .modal-content { background: white; max-width: 900px; margin: 40px auto; border-radius: 16px; position: relative; display: flex; flex-wrap: wrap; overflow: hidden; }
+        .modal-content { background: white; max-width: 900px; margin: 40px auto; border-radius: 16px; position: relative; display: flex; flex-wrap: wrap; overflow: hidden; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
         .modal-left { flex: 1.2; padding: 25px; min-width: 300px; }
         .modal-right { flex: 0.8; padding: 25px; background: #f8fafc; border-left: 1px solid #e2e8f0; min-width: 300px; }
         .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; margin-bottom: 20px; }
         
-        .input, .textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
-        .btn-submit { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .input, .textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        .btn-submit { width: 100%; background: var(--primary); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #1d4ed8; }
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; cursor: pointer; color: #64748b; z-index: 10; }
 
         @media (max-width: 768px) { .modal-content { flex-direction: column; margin: 10px; } .modal-right { border-left: none; border-top: 1px solid #e2e8f0; } }
@@ -63,7 +66,7 @@
         <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
     </div>
 
-    <div id="grid" class="grid">Đang kết nối dữ liệu từ Google Sheets...</div>
+    <div id="grid" class="grid">Đang đồng bộ dữ liệu...</div>
 </div>
 
 <div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
@@ -73,38 +76,42 @@
             <div id="m-video" class="video-box"></div>
             <h3 style="color: var(--primary); margin-top: 0;">Bằng cấp & Kinh nghiệm</h3>
             <div id="m-certs"></div>
-            <p id="m-bio" style="font-size: 14px; color: #475569; margin-top: 15px;"></p>
+            <p id="m-bio" style="font-size: 14px; color: #475569; margin-top: 15px; line-height: 1.6;"></p>
         </div>
         <div class="modal-right">
             <h3 style="margin-top: 0;">Đặt lịch phỏng vấn</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 15px;">Thông tin sẽ được gửi trực tiếp đến quản lý nguồn lực iGT.</p>
             <form action="https://formspree.io/f/xjgglrrz" method="POST">
-                <input type="hidden" id="f-teacher" name="Teacher_Name">
+                <input type="hidden" id="f-teacher" name="Teacher_Selected">
                 <label style="font-size: 13px; font-weight: 600;">Trung tâm / Đối tác *</label>
-                <input type="text" name="Partner" class="input" required placeholder="Tên đơn vị của bạn">
-                <label style="font-size: 13px; font-weight: 600;">Số điện thoại *</label>
-                <input type="tel" name="Phone" class="input" required placeholder="09xx xxx xxx">
-                <label style="font-size: 13px; font-weight: 600;">Ghi chú</label>
-                <textarea name="Note" class="textarea" rows="3" placeholder="Yêu cầu cụ thể..."></textarea>
-                <button type="submit" class="btn-submit">GỬI YÊU CẦU</button>
+                <input type="text" name="Partner_Name" class="input" required placeholder="Tên đơn vị của bạn">
+                <label style="font-size: 13px; font-weight: 600;">Số điện thoại liên hệ *</label>
+                <input type="tel" name="Phone_Number" class="input" required placeholder="09xx xxx xxx">
+                <label style="font-size: 13px; font-weight: 600;">Ghi chú thêm</label>
+                <textarea name="Customer_Note" class="textarea" rows="3" placeholder="Yêu cầu cụ thể hoặc khung giờ phỏng vấn..."></textarea>
+                <button type="submit" class="btn-submit">XÁC NHẬN GỬI</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    // LINK CSV CỦA BẠN
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
+    // Link CSV kèm mã chống cache thời gian thực
+    const baseCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
+    
     let teachers = [];
 
-    // HÀM TẢI DỮ LIỆU CÓ PROXY ĐỂ TRÁNH LỖI TRẮNG TRANG (CORS)
     async function loadData() {
         try {
+            // Thêm timestamp để trình duyệt luôn tải bản mới nhất
+            const finalUrl = baseCsvUrl + "&cache_bust=" + new Date().getTime();
             const proxy = "https://api.allorigins.win/get?url=";
-            const response = await fetch(proxy + encodeURIComponent(csvUrl));
-            const json = await response.json();
-            const data = json.contents;
             
-            const rows = data.split(/\r?\n/).slice(1);
+            const response = await fetch(proxy + encodeURIComponent(finalUrl));
+            const json = await response.json();
+            const csvData = json.contents;
+            
+            const rows = csvData.split(/\r?\n/).slice(1);
             teachers = rows.map(row => {
                 const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                 return {
@@ -117,31 +124,36 @@
                     bio: c[6]?.replace(/"/g, "").trim(),
                     video: c[7]?.replace(/"/g, "").trim()
                 };
-            }).filter(t => t.name);
+            }).filter(t => t.name && t.name.length > 1);
             
             render(teachers);
-        } catch (e) {
-            document.getElementById('grid').innerHTML = "Không thể tải dữ liệu. Vui lòng kiểm tra link Google Sheets.";
+        } catch (error) {
+            console.error(error);
+            document.getElementById('grid').innerHTML = "Hệ thống đang cập nhật dữ liệu từ Sheets, vui lòng thử lại sau 30 giây.";
         }
     }
 
     function render(data) {
-        document.getElementById('grid').innerHTML = data.map(t => {
-            const isPending = t.status === 'Pending';
-            // Tách bằng cấp bằng dấu chấm phẩy
+        const grid = document.getElementById('grid');
+        if (data.length === 0) {
+            grid.innerHTML = "<p>Không có giáo viên nào phù hợp với yêu cầu.</p>";
+            return;
+        }
+        grid.innerHTML = data.map(t => {
+            const isPending = t.status.toLowerCase() === 'pending';
             const certs = t.cert.split(';').map(item => `<span class="cert-tag-small">${item.trim()}</span>`).join('');
             
             return `
                 <div class="card ${isPending ? 'disabled' : ''}" onclick="handleCardClick('${t.id}')">
                     <div class="badge-country">${t.country}</div>
                     <div class="img-container">
-                        <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/300x400?text=No+Image'">
+                        <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/300x400?text=iGT+Teacher'">
                     </div>
                     <div class="card-body">
                         <span class="status-tag ${isPending ? 'status-pending' : 'status-available'}">
-                            ${isPending ? 'Đang chờ' : 'Sẵn sàng'}
+                            ${isPending ? 'Đã có lịch' : 'Sẵn sàng'}
                         </span>
-                        <h3 style="margin: 5px 0;">${t.name}</h3>
+                        <h3 style="margin: 5px 0; font-size: 1.1rem;">${t.name}</h3>
                         <div>${certs}</div>
                     </div>
                 </div>
@@ -151,36 +163,44 @@
 
     function handleCardClick(id) {
         const t = teachers.find(x => x.id === id);
-        if (t && t.status !== 'Pending') openModal(t);
-        else if (t.status === 'Pending') alert("Giáo viên này hiện đã có lịch hẹn!");
+        if (t) openModal(t);
     }
 
     function openModal(t) {
         document.getElementById('f-teacher').value = t.name;
         document.getElementById('m-bio').innerText = t.bio;
-        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => `<div style="border-left: 3px solid #2563eb; padding-left: 10px; margin-bottom: 8px; font-weight: 600;">${c.trim()}</div>`).join('');
+        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => 
+            `<div style="border-left: 3px solid #2563eb; padding-left: 10px; margin-bottom: 8px; font-weight: 600; font-size: 14px;">${c.trim()}</div>`
+        ).join('');
         
-        // Xử lý link Youtube
         let vId = "";
-        if(t.video.includes("v=")) vId = t.video.split("v=")[1].split("&")[0];
-        else vId = t.video.split("/").pop();
+        const url = t.video;
+        if(url.includes("v=")) vId = url.split("v=")[1].split("&")[0];
+        else if(url.includes("youtu.be/")) vId = url.split("/").pop();
+        else if(url.includes("embed/")) vId = url.split("embed/")[1];
+
+        document.getElementById('m-video').innerHTML = vId ? 
+            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>` : 
+            `<div style="color:white; text-align:center; padding-top:20%;">Video đang cập nhật</div>`;
         
-        document.getElementById('m-video').innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>`;
         document.getElementById('modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         document.getElementById('modal').style.display = 'none';
         document.getElementById('m-video').innerHTML = '';
+        document.body.style.overflow = 'auto';
     }
 
     function filterBy(country, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country === country);
+        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country.toLowerCase() === country.toLowerCase());
         render(filtered);
     }
 
+    // Khởi chạy
     loadData();
 </script>
 </body>
