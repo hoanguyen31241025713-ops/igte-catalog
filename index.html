@@ -107,24 +107,40 @@
 </div>
 
 <script>
-    const teachers = [
-        { id: 1, name: "Ms. Amina", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "CELTA, 4 năm kinh nghiệm, Thạc sĩ GD", bio: "Chuyên dạy giao tiếp cho người đi làm và tiếng Anh doanh nghiệp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 2, name: "Mr. Yassine", country: "Algeria", status: "Pending", img: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 8.0, Thạc sĩ Ngôn ngữ, TESOL", bio: "Kỹ năng sư phạm tốt, chuyên luyện thi IELTS học thuật.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 3, name: "Ms. Putri", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TESOL, Chuyên dạy trẻ em, TEFL", bio: "Năng động, sáng tạo trong việc tổ chức hoạt động lớp học vui nhộn.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 4, name: "Mr. Ahmed", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Bachelor of Arts, TEFL, 5 năm KN", bio: "Giọng chuẩn, tập trung sâu vào chỉnh sửa phát âm và ngữ pháp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 5, name: "Ms. Maria", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "LET Licensed, 7 năm kinh nghiệm, IELTS 7.5", bio: "Chuyên dạy tiếng Anh học thuật cho học sinh phổ thông.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 6, name: "Mr. Karim", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TOEFL 110, Kinh nghiệm QT, CELTA", bio: "Từng giảng dạy tại nhiều quốc gia, phong cách dạy hiện đại.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 7, name: "Ms. Leila", country: "Algeria", status: "Available", img: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "CELTA, TESOL, Bachelor Degree", bio: "Nhiệt tình, có phương pháp giúp học sinh lấy lại căn bản nhanh.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 8, name: "Mr. Budi", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 7.5, 3 năm Offline, TEFL", bio: "Chuyên dạy tiếng Anh giao tiếp và phản xạ cho người mới.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 9, name: "Ms. Fatma", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/712521/pexels-photo-712521.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Thạc sĩ Giáo dục, 10 năm KN", bio: "Có kinh nghiệm dày dặn tại các trường quốc tế lớn.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 10, name: "Mr. Paolo", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Bachelor of SE, TESOL, IELTS 8.0", bio: "Chuyên luyện thi chứng chỉ quốc tế cấp tốc.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 11, name: "Ms. Sarah", country: "Morocco", status: "Available", img: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TESOL, 5 năm dạy tại VN, CELTA", bio: "Am hiểu văn hóa và tâm lý học sinh Việt Nam.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 12, name: "Mr. Omar", country: "Egypt", status: "Available", img: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "IELTS 8.5, Master in English", bio: "Chuyên các lớp Writing và Speaking chuyên sâu cho du học.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 13, name: "Ms. Dian", country: "Indonesia", status: "Available", img: "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Master of English, TEFL", bio: "Nền tảng học thuật vững chắc, phù hợp dạy khối chuyên.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 14, name: "Mr. Ali", country: "Algeria", status: "Available", img: "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "TEFL, Native Accent, Bachelor", bio: "Giọng chuẩn bản xứ, phong thái chuyên nghiệp.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-        { id: 15, name: "Ms. Joy", country: "Philippines", status: "Available", img: "https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=400", cert: "Licensed Teacher, IELTS 8.0, TESOL", bio: "Nghiêm túc, kỷ luật và cam kết đầu ra cho học viên.", video: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
-    ];
+    const teachers = // 1. Dán link CSV của bạn vào đây
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
 
+let teachers = [];
+
+// 2. Hàm tự động tải dữ liệu từ Sheet
+async function loadDataFromSheet() {
+    try {
+        const response = await fetch(csvUrl);
+        const data = await response.text();
+        const rows = data.split('\n').slice(1); // Bỏ hàng tiêu đề
+        
+        teachers = rows.map(row => {
+            // Xử lý tách cột chuẩn (tránh lỗi khi có dấu phẩy trong văn bản)
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            return {
+                id: cols[0]?.replace(/"/g, ""),
+                name: cols[1]?.replace(/"/g, ""),
+                country: cols[2]?.replace(/"/g, ""),
+                status: cols[3]?.replace(/"/g, ""),
+                img: cols[4]?.replace(/"/g, ""),
+                cert: cols[5]?.replace(/"/g, ""),
+                bio: cols[6]?.replace(/"/g, ""),
+                video: cols[7]?.replace(/"/g, "")
+            };
+        });
+        renderGrid(teachers); // Gọi hàm hiển thị sau khi đã có dữ liệu
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu từ Sheet:", error);
+    }
+}
+
+// 3. Chạy hàm lấy dữ liệu ngay khi web mở
+loadDataFromSheet();
     function render(data) {
         document.getElementById('grid').innerHTML = data.map(t => {
             const isPending = t.status === 'Pending';
@@ -200,3 +216,4 @@
 </body>
 
 </html>
+
