@@ -9,12 +9,18 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
         .container { max-width: 1300px; margin: auto; text-align: center; }
         
+        /* Toolbar */
+        .toolbar { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .refresh-btn { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 13px; color: var(--secondary); font-weight: 600; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .refresh-btn:hover { background: #e2e8f0; color: var(--primary); }
+        .refresh-btn.spinning { pointer-events: none; opacity: 0.6; }
+
         /* Filter */
-        .filter-container { display: flex; justify-content: center; gap: 10px; margin: 25px 0; flex-wrap: wrap; }
+        .filter-container { display: flex; justify-content: center; gap: 10px; margin: 10px 0 25px; flex-wrap: wrap; }
         .filter-btn { padding: 8px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--secondary); transition: 0.2s; }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* Grid hiển thị tất cả giáo viên */
+        /* Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; text-align: left; }
         .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid #e2e8f0; position: relative; transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
@@ -49,12 +55,18 @@
     <h1 style="color: var(--primary); margin-bottom: 5px; font-size: 2.5rem;">Global Teacher Catalog</h1>
     <p style="color: var(--secondary); margin-top: 0;">Danh sách nhân sự giáo viên quốc tế trực tuyến</p>
 
+    <div class="toolbar">
+        <button class="refresh-btn" id="refreshBtn" onclick="init()">
+            🔄 Cập nhật dữ liệu từ Sheet
+        </button>
+    </div>
+
     <div class="filter-container" id="filter-bar">
         <button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button>
-        </div>
+    </div>
 
     <div id="loading" style="padding: 100px; font-size: 20px; font-weight: bold; color: #64748b;">
-        Đang tải dữ liệu từ Google Sheets...
+        Đang tải dữ liệu...
     </div>
     
     <div id="grid" class="grid"></div>
@@ -86,18 +98,23 @@
 </div>
 
 <script>
-    // Link CSV gốc của bạn
     const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
     let teachers = [];
 
     async function init() {
+        const btn = document.getElementById('refreshBtn');
+        const loading = document.getElementById('loading');
+        const grid = document.getElementById('grid');
+        
+        btn.classList.add('spinning');
+        btn.innerText = "⏳ Đang tải...";
+        
         try {
-            // Sử dụng cơ chế fetch mạnh mẽ nhất để lấy toàn bộ dữ liệu
-            const timestamp = Date.now();
-            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}&v=${timestamp}`);
+            // Ép Google Sheets tải dữ liệu mới nhất bằng cách thay đổi query string
+            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}&v=${Date.now()}`);
+            if (!response.ok) throw new Error();
             const data = await response.text();
             
-            // Chuyển CSV thành mảng (Array)
             const rows = data.split(/\r?\n/).slice(1);
             teachers = rows.map(row => {
                 const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
@@ -113,12 +130,18 @@
                 };
             }).filter(t => t.name && t.name.length > 1);
 
-            document.getElementById('loading').style.display = 'none';
+            loading.style.display = 'none';
+            setupFilters();
             render(teachers);
-            setupFilters(); // Tự động tạo nút lọc dựa trên quốc gia có trong sheet
+            
+            btn.classList.remove('spinning');
+            btn.innerText = "🔄 Cập nhật thành công";
+            setTimeout(() => { btn.innerText = "🔄 Làm mới dữ liệu"; }, 2000);
+            
         } catch (error) {
-            document.getElementById('loading').innerHTML = "Đang kết nối lại với máy chủ Google... (Vui lòng đợi vài giây)";
-            setTimeout(init, 3000); // Thử lại sau 3 giây nếu lỗi
+            loading.innerHTML = "Lỗi kết nối. Hãy thử lại sau vài giây.";
+            btn.innerText = "❌ Lỗi, thử lại?";
+            btn.classList.remove('spinning');
         }
     }
 
@@ -160,7 +183,6 @@
             `<div style="border-left: 4px solid #2563eb; padding-left: 12px; margin-bottom: 10px; font-weight: 600; font-size: 14px;">${c.trim()}</div>`
         ).join('');
         
-        // Xử lý link Video YouTube
         let vId = "";
         const vLink = t.video;
         if(vLink.includes("v=")) vId = vLink.split("v=")[1].split("&")[0];
@@ -169,7 +191,7 @@
         
         document.getElementById('m-video').innerHTML = vId ? 
             `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>` : 
-            `<div style="color:white; text-align:center; padding-top:20%;">Video đang được cập nhật</div>`;
+            `<div style="color:white; text-align:center; padding-top:20%;">Video đang cập nhật</div>`;
             
         document.getElementById('modal').style.display = 'block';
         document.body.style.overflow = 'hidden';
