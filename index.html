@@ -107,39 +107,35 @@
 </div>
 
 <script>
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pubhtml";
+    // Link CSV của bạn
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
 
 let teachers = [];
 
-// 2. Hàm tự động tải dữ liệu từ Sheet
-async function loadDataFromSheet() {
+async function loadData() {
     try {
         const response = await fetch(csvUrl);
         const data = await response.text();
-        const rows = data.split('\n').slice(1); // Bỏ hàng tiêu đề
+        const rows = data.split('\n').slice(1);
         
         teachers = rows.map(row => {
-            // Xử lý tách cột chuẩn (tránh lỗi khi có dấu phẩy trong văn bản)
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             return {
-                id: cols[0]?.replace(/"/g, ""),
-                name: cols[1]?.replace(/"/g, ""),
-                country: cols[2]?.replace(/"/g, ""),
-                status: cols[3]?.replace(/"/g, ""),
-                img: cols[4]?.replace(/"/g, ""),
-                cert: cols[5]?.replace(/"/g, ""),
-                bio: cols[6]?.replace(/"/g, ""),
-                video: cols[7]?.replace(/"/g, "")
+                id: c[0]?.replace(/"/g, "").trim(),
+                name: c[1]?.replace(/"/g, "").trim(),
+                country: c[2]?.replace(/"/g, "").trim(),
+                status: c[3]?.replace(/"/g, "").trim(),
+                img: c[4]?.replace(/"/g, "").trim(),
+                cert: c[5]?.replace(/"/g, "").trim(),
+                bio: c[6]?.replace(/"/g, "").trim(),
+                video: c[7]?.replace(/"/g, "").trim()
             };
         });
-        renderGrid(teachers); // Gọi hàm hiển thị sau khi đã có dữ liệu
-    } catch (error) {
-        console.error("Lỗi lấy dữ liệu từ Sheet:", error);
-    }
+        renderGrid(teachers);
+    } catch (e) { console.error("Lỗi kết nối Sheet:", e); }
 }
 
-// 3. Chạy hàm lấy dữ liệu ngay khi web mở
-loadDataFromSheet();
+loadData(); // Lệnh này giúp web lấy dữ liệu từ Sheet ngay khi mở trang
     function render(data) {
         document.getElementById('grid').innerHTML = data.map(t => {
             const isPending = t.status === 'Pending';
@@ -215,6 +211,7 @@ loadDataFromSheet();
 </body>
 
 </html>
+
 
 
 
