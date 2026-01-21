@@ -11,37 +11,41 @@
         header { background: var(--white); padding: 30px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .logo-text { font-size: 2rem; font-weight: 800; color: var(--primary); margin: 0; }
         
-        /* Bộ lọc 5 nước */
+        /* Bộ lọc 5 nước đúng như ảnh yêu cầu */
         .controls-wrapper { max-width: 1200px; margin: 20px auto; padding: 0 20px; text-align: center; }
         .filter-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .filter-btn { padding: 10px 22px; border: 1px solid #e2e8f0; background: var(--white); color: var(--text-sub); border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         .filter-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
 
-        /* Grid hiển thị giáo viên */
-        .main-content { max-width: 1200px; margin: auto; padding: 20px 20px 100px; }
+        /* Danh sách giáo viên */
+        .main-content { max-width: 1200px; margin: auto; padding: 20px 20px 80px; min-height: 500px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: var(--white); border-radius: 20px; overflow: hidden; transition: 0.3s; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        .card { background: var(--white); border-radius: 20px; overflow: hidden; transition: 0.3s; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px rgba(0,0,0,0.1); }
+        
         .img-container { width: 100%; height: 350px; background: #f1f5f9; position: relative; }
         .card-img { width: 100%; height: 100%; object-fit: cover; }
         .badge-country { position: absolute; top: 15px; right: 15px; background: rgba(15, 23, 42, 0.85); color: white; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; }
 
-        .card-body { padding: 20px; }
+        .card-body { padding: 20px; flex-grow: 1; }
         .status-tag { color: #059669; background: #ecfdf5; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
         .teacher-name { font-size: 1.4rem; font-weight: 700; margin: 0 0 12px 0; color: #1e293b; }
-        .cert-tag { font-size: 11px; background: #f1f5f9; color: #475569; padding: 5px 12px; border-radius: 6px; font-weight: 600; margin-right: 5px; display: inline-block; }
+        .cert-tag { font-size: 11px; background: #f1f5f9; color: #475569; padding: 5px 12px; border-radius: 6px; font-weight: 600; margin: 0 5px 5px 0; display: inline-block; }
 
         /* Modal chi tiết */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto; padding: 20px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
         .modal-content { background: var(--white); max-width: 1000px; margin: 20px auto; border-radius: 24px; display: grid; grid-template-columns: 1.2fr 0.8fr; overflow: hidden; position: relative; }
         .modal-left { padding: 30px; }
         .modal-right { background: #f8fafc; padding: 30px; border-left: 1px solid #e2e8f0; }
-        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; margin-bottom: 20px; }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-sub); z-index: 11; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 35px; cursor: pointer; color: var(--text-sub); z-index: 11; line-height: 1; }
 
         input, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; }
-        .submit-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .submit-btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
         
+        #loading { text-align: center; padding: 50px; color: var(--text-sub); font-weight: 600; }
+
         @media (max-width: 850px) { .modal-content { grid-template-columns: 1fr; } .modal-right { border-left: none; border-top: 1px solid #e2e8f0; } }
     </style>
 </head>
@@ -63,7 +67,9 @@
             <button class="filter-btn" onclick="filterBy('Philippines', this)">Philippines</button>
         </div>
     </div>
-    <div id="grid" class="grid"></div>
+    
+    <div id="loading">🔄 Đang tải dữ liệu...</div>
+    <div id="grid" class="grid" style="display: none;"></div>
 </div>
 
 <div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
@@ -71,20 +77,18 @@
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <div class="modal-left">
             <div id="m-video" class="video-box"></div>
-            <h3 style="color: var(--primary); margin-bottom: 15px;">Kinh nghiệm & Bằng cấp</h3>
+            <h3 style="color: var(--primary); margin-bottom: 10px;">Bằng cấp & Kinh nghiệm</h3>
             <div id="m-certs"></div>
             <p id="m-bio" style="color: var(--text-sub); line-height: 1.6; margin-top: 20px; white-space: pre-line;"></p>
         </div>
         <div class="modal-right">
             <h2 id="m-name" style="margin-top:0"></h2>
-            <p style="font-size:13px; color:var(--text-sub); margin-bottom:20px">Đặt lịch phỏng vấn giáo viên này qua form bên dưới.</p>
             <form action="https://formspree.io/f/xjgglrrz" method="POST">
-                <input type="hidden" id="f-teacher" name="Giao_Vien">
-                <input type="text" name="Partner" required placeholder="Tên đơn vị/Trung tâm *">
+                <input type="hidden" id="f-teacher" name="Teacher_Name">
+                <input type="text" name="Partner" required placeholder="Tên đơn vị *">
                 <input type="tel" name="Phone" required placeholder="Số điện thoại Zalo *">
-                <input type="text" name="Schedule" placeholder="Giờ phỏng vấn dự kiến">
-                <textarea name="Note" rows="3" placeholder="Ghi chú thêm..."></textarea>
-                <button type="submit" class="submit-btn">XÁC NHẬN ĐẶT LỊCH</button>
+                <textarea name="Note" rows="3" placeholder="Ghi chú yêu cầu..."></textarea>
+                <button type="submit" class="submit-btn">ĐẶT LỊCH PHỎNG VẤN</button>
             </form>
         </div>
     </div>
@@ -96,28 +100,31 @@
 
     async function init() {
         try {
-            // Thêm tham số ngẫu nhiên để tránh trình duyệt lưu cache dữ liệu cũ
-            const res = await fetch(`${SHEET_URL}&cachebuster=${Date.now()}`);
+            const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
             const data = await res.text();
-            const rows = data.split(/\r?\n/).slice(1);
             
-            teachers = rows.map(row => {
-                const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                return {
-                    id: c[0]?.replace(/"/g, "").trim(),
-                    name: c[1]?.replace(/"/g, "").trim(),
-                    country: c[2]?.replace(/"/g, "").trim(),
-                    status: c[3]?.replace(/"/g, "").trim() || "SẴN SÀNG",
-                    img: c[4]?.replace(/"/g, "").trim(), // Cột E: Hình ảnh
-                    cert: c[5]?.replace(/"/g, "").trim(), // Cột F: Bằng cấp
-                    bio: c[6]?.replace(/"/g, "").trim(), // Cột G: Giới thiệu
-                    video: c[7]?.replace(/"/g, "").trim() // Cột H: Video Youtube
-                };
-            }).filter(t => t.name);
+            // Xử lý CSV: Tách dòng, tách cột chuẩn xác
+            const rows = data.split(/\r?\n/).map(line => {
+                return line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(item => item.replace(/^"|"$/g, '').trim());
+            });
 
+            // Bắt đầu lấy dữ liệu từ hàng 2 (index 1) để bỏ qua tiêu đề
+            teachers = rows.slice(1).map(col => ({
+                id: col[0],         // Cột A: id
+                name: col[1],       // Cột B: name
+                country: col[2],    // Cột C: country
+                status: col[3] || "Available", // Cột D: status
+                img: col[4],        // Cột E: img
+                cert: col[5] || "", // Cột F: cert
+                bio: col[6] || "",  // Cột G: bio
+                video: col[7] || "" // Cột H: video
+            })).filter(t => t.name && t.name !== "");
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('grid').style.display = 'grid';
             render(teachers);
         } catch (e) {
-            document.getElementById('grid').innerHTML = "<p style='text-align:center; grid-column: 1/-1;'>Lỗi tải dữ liệu từ Google Sheets. Vui lòng kiểm tra lại quyền truy cập của link Sheet.</p>";
+            document.getElementById('loading').innerHTML = "⚠️ Lỗi kết nối dữ liệu Sheet.";
         }
     }
 
@@ -129,10 +136,10 @@
                     <div class="badge-country">${t.country}</div>
                 </div>
                 <div class="card-body">
-                    <span class="status-tag">${t.status}</span>
+                    <span class="status-tag">${t.status === 'Available' ? 'SẴN SÀNG' : t.status}</span>
                     <h3 class="teacher-name">${t.name}</h3>
                     <div class="cert-container">
-                        ${t.cert.split(',').slice(0, 3).map(c => `<span class="cert-tag">${c.trim()}</span>`).join('')}
+                        ${t.cert.split(';').map(c => `<span class="cert-tag">${c.trim()}</span>`).join('')}
                     </div>
                 </div>
             </div>
@@ -142,19 +149,20 @@
     function filterBy(country, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country === country);
+        const filtered = country === 'All' ? teachers : teachers.filter(t => t.country.toLowerCase() === country.toLowerCase());
         render(filtered);
     }
 
     function openModal(id) {
-        const t = teachers.find(x => x.id === id);
+        const t = teachers.find(x => x.id == id);
         if(!t) return;
         
-        document.getElementById('m-name').innerText = "Ms./Mr. " + t.name;
+        document.getElementById('m-name').innerText = t.name;
         document.getElementById('f-teacher').value = t.name;
         document.getElementById('m-bio').innerText = t.bio;
-        document.getElementById('m-certs').innerHTML = t.cert.split(',').map(c => `<div style="border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-weight: 600;">${c.trim()}</div>`).join('');
+        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => `<div style="border-left: 3px solid var(--primary); padding-left: 12px; margin-bottom: 8px; font-weight: 600;">${c.trim()}</div>`).join('');
         
+        // Xử lý lấy ID video từ link YouTube ở cột H
         let vId = "";
         const vLink = t.video;
         if(vLink.includes("v=")) vId = vLink.split("v=")[1].split("&")[0];
@@ -162,8 +170,8 @@
         else vId = vLink.split("/").pop().split("?")[0];
         
         document.getElementById('m-video').innerHTML = vId ? 
-            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}?autoplay=1" frameborder="0" allowfullscreen></iframe>` : 
-            `<div style="color:white; text-align:center; padding-top:20%;">Chưa cập nhật video giới thiệu</div>`;
+            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
+            `<div style="color:white; text-align:center; padding-top:20%;">Đang cập nhật video giới thiệu</div>`;
             
         document.getElementById('modal').style.display = 'block';
         document.body.style.overflow = 'hidden';
