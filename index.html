@@ -17,7 +17,7 @@
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; color: var(--text-main); line-height: 1.5; }
 
-        /* GIỮ NGUYÊN HEADER & FILTERS CỦA BẠN */
+        /* HEADER & FILTERS */
         header { background: var(--white); padding: 25px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; }
         .filter-wrapper { max-width: 800px; margin: 25px auto; padding: 0 20px; display: flex; justify-content: center; }
@@ -25,7 +25,7 @@
         .filter-btn { padding: 8px 16px; border: none; background: transparent; border-radius: 99px; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-sub); transition: 0.2s; }
         .filter-btn.active { background: var(--primary); color: white; }
 
-        /* GIỮ NGUYÊN GRID SYSTEM CỦA BẠN */
+        /* GRID SYSTEM */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
@@ -39,21 +39,23 @@
         .tags-container { display: flex; flex-wrap: wrap; gap: 5px; }
         .tag { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
 
-        /* PHẦN CHỈNH SỬA: MODAL TỐI ƯU VỊ TRÍ DẤU X VÀ THANH CUỘN */
+        /* MODAL CHỈNH SỬA TỈ LỆ VÀ THANH CUỘN */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(0,0,0,0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
         }
         .modal-content { 
-            background: var(--white); max-width: 1000px; width: 100%; border-radius: 20px; 
-            display: grid; grid-template-columns: 1fr 360px; 
-            max-height: 85vh; /* Khống chế chiều cao */
-            position: relative; /* Gốc cho dấu X */
-            overflow: hidden; /* Quan trọng: Để thanh cuộn nằm bên trong */
+            background: var(--white); 
+            max-width: 1000px; 
+            width: 100%; 
+            border-radius: 20px; 
+            max-height: 85vh; 
+            position: relative; 
+            overflow: hidden; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            display: block; /* Chuyển về block để scroll-area quản lý grid */
         }
         
-        /* DẤU X NẰM TRONG Ô, PHÍA TRÊN CÂU ĐẶT LỊCH */
         .close-btn { 
             position: absolute; 
             top: 15px; 
@@ -64,38 +66,42 @@
             z-index: 110; 
             line-height: 1;
             transition: 0.2s;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .close-btn:hover { color: var(--text-main); }
+        .close-btn:hover { color: var(--text-main); background: #fff; }
 
-        /* Vùng nội dung tự cuộn bên trong */
         .modal-scroll-area {
             display: grid;
-            grid-template-columns: 1fr 360px;
+            grid-template-columns: 1.8fr 1fr; /* Chia tỉ lệ 65% - 35% */
             width: 100%;
-            height: 100%;
-            overflow-y: auto; /* Thanh cuộn xuất hiện ở đây */
+            max-height: 85vh; 
+            overflow-y: auto; 
         }
 
-        .modal-left { padding: 35px; border-right: 1px solid #f1f5f9; }
-        .modal-right { background: #f8fafc; padding: 35px; }
+        .modal-left { padding: 40px; border-right: 1px solid #f1f5f9; }
+        .modal-right { background: #f8fafc; padding: 40px; }
 
-        /* Video nhỏ gọn */
-        .video-container { width: 100%; max-width: 480px; margin: 0 auto 30px auto; }
+        .video-container { width: 100%; max-width: 500px; margin: 0 auto 30px auto; }
         .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
         .exp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 14px; }
         .exp-bar { width: 3px; height: 18px; background: var(--primary); border-radius: 2px; }
 
-        /* FORM */
         .form-group { margin-bottom: 15px; }
         label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; display: block; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; font-family: inherit; }
         .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
         @media (max-width: 850px) {
-            .modal-content { max-height: 90vh; }
             .modal-scroll-area { grid-template-columns: 1fr; }
             .modal-left { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .close-btn { top: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -124,20 +130,20 @@
                 <div class="video-container">
                     <div id="m-video" class="video-box"></div>
                 </div>
-                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom:15px;">Kinh nghiệm & Bằng cấp</h3>
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom:15px; font-weight: 700;">Kinh nghiệm & Bằng cấp</h3>
                 <div id="m-certs"></div>
-                <h3 style="margin-top: 25px; font-size: 1.1rem;">Giới thiệu chi tiết</h3>
-                <p id="m-bio" style="font-size: 14px; color: #64748b; line-height: 1.6; white-space: pre-line;"></p>
+                <h3 style="margin-top: 25px; font-size: 1.1rem; font-weight: 700;">Giới thiệu chi tiết</h3>
+                <p id="m-bio" style="font-size: 14px; color: #475569; line-height: 1.7; white-space: pre-line;"></p>
             </div>
             <div class="modal-right">
-                <h2 style="font-size: 1.3rem; margin-top: 5px; margin-bottom: 10px;">Đặt lịch phỏng vấn</h2>
-                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 25px;">Hỗ trợ kết nối nhanh qua Zalo.</p>
+                <h2 style="font-size: 1.4rem; margin-top: 5px; margin-bottom: 10px; font-weight: 800;">Đặt lịch phỏng vấn</h2>
+                <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 25px;">Hỗ trợ kết nối nhanh qua Zalo.</p>
                 <form action="https://formspree.io/f/xjgglrrz" method="POST">
                     <input type="hidden" id="f-teacher" name="Giao_Vien">
-                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" required></div>
-                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" required></div>
+                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị" required></div>
+                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="Số điện thoại" required></div>
                     <div class="form-group"><label>Giờ hẹn mong muốn</label><input type="text" name="Time" placeholder="VD: 14h chiều thứ 4"></div>
-                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3"></textarea></div>
+                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể..."></textarea></div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>
             </div>
