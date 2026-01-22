@@ -12,103 +12,108 @@
             --text-main: #1e293b;
             --text-sub: #64748b;
             --white: #ffffff;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; color: var(--text-main); line-height: 1.5; }
 
-        /* HEADER & FILTERS */
-        header { background: var(--white); padding: 25px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; }
-        .filter-wrapper { max-width: 800px; margin: 25px auto; padding: 0 20px; display: flex; justify-content: center; }
-        .filter-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; background: #fff; padding: 6px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .filter-btn { padding: 8px 16px; border: none; background: transparent; border-radius: 99px; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-sub); transition: 0.2s; }
-        .filter-btn.active { background: var(--primary); color: white; }
-
-        /* GRID SYSTEM */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
+        /* GRID SYSTEM (GIỮ NGUYÊN) */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px 60px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
+        .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .card-img-box { width: 100%; height: 280px; position: relative; }
         .card-img { width: 100%; height: 100%; object-fit: cover; }
         .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
-        .status-tag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 8px; color: #059669; background: #ecfdf5; width: fit-content; }
+        .card-content { padding: 16px; flex-grow: 1; }
         .teacher-name { font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0; color: #0f172a; }
-        .tags-container { display: flex; flex-wrap: wrap; gap: 5px; }
-        .tag { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+        .tag { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; margin-right: 5px; margin-bottom: 5px; display: inline-block; }
 
-        /* MODAL CẢI TIẾN */
+        /* MODAL - CẢI TIẾN KÍCH THƯỚC */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.7); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, 0.75); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
         }
         .modal-content { 
-            background: var(--white); max-width: 900px; width: 100%; border-radius: 20px; 
-            display: grid; grid-template-columns: 1fr 340px; 
-            max-height: 85vh; /* Khống chế chiều cao */
-            position: relative; /* Gốc cho dấu X */
-            overflow: hidden; /* Để bo góc ko bị tràn nội dung */
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            background: var(--white); 
+            max-width: 1000px; /* Tăng chiều rộng tổng thể */
+            width: 95%; 
+            height: 80vh; /* Chiều cao cố định chuẩn hình ảnh */
+            border-radius: 24px; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; /* Sử dụng flex để quản lý 2 cột */
+            box-shadow: var(--shadow);
         }
 
-        /* Nút Đóng - Nằm TRONG ô và TRÊN câu đặt lịch */
+        /* DẤU X CỐ ĐỊNH TẠI GÓC PHẢI */
         .close-btn { 
             position: absolute; 
-            top: 15px; 
-            right: 20px; 
-            font-size: 28px; 
+            top: 20px; 
+            right: 25px; 
+            font-size: 30px; 
             cursor: pointer; 
             color: #94a3b8; 
-            z-index: 100; /* Luôn nổi lên trên */
+            z-index: 110; 
             line-height: 1;
             transition: 0.2s;
+            background: white;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
-        .close-btn:hover { color: var(--text-main); }
+        .close-btn:hover { color: #1e293b; background: #f1f5f9; }
 
-        /* Vùng nội dung có thanh cuộn riêng */
+        /* CHIA CỘT TRÁI - PHẢI */
         .modal-scroll-area {
-            display: grid;
-            grid-template-columns: 1fr 340px;
+            display: flex;
             width: 100%;
-            overflow-y: auto; /* Cuộn trong phạm vi ô */
+            height: 100%;
         }
-        
-        .modal-left { padding: 35px; border-right: 1px solid #f1f5f9; }
-        .modal-right { background: #f8fafc; padding: 35px; }
 
-        /* Video nhỏ gọn */
-        .video-container { width: 100%; max-width: 480px; margin: 0 auto 30px auto; }
-        .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .modal-left { 
+            flex: 1.3; /* Cột trái rộng hơn */
+            padding: 45px; 
+            overflow-y: auto; /* Cuộn riêng cột trái */
+            border-right: 1px solid #f1f5f9; 
+        }
+
+        .modal-right { 
+            flex: 0.7; /* Cột phải hẹp hơn cho form */
+            background: #f8fafc; 
+            padding: 45px; 
+            overflow-y: auto; /* Cuộn riêng cột phải nếu cần */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* VIDEO & NỘI DUNG */
+        .video-container { width: 100%; margin-bottom: 30px; }
+        .video-box { aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; }
         
-        .exp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 14px; }
-        .exp-bar { width: 3px; height: 18px; background: var(--primary); border-radius: 2px; }
+        .exp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 15px; }
+        .exp-bar { width: 4px; height: 18px; background: var(--primary); border-radius: 4px; }
 
         /* FORM */
-        .form-group { margin-bottom: 15px; }
-        label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; display: block; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; font-family: inherit; }
-        .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .form-group { margin-bottom: 18px; }
+        label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block; }
+        input, textarea { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 14px; transition: 0.2s; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-submit:hover { background: #1d4ed8; }
 
-        @media (max-width: 850px) {
-            .modal-content { max-height: 90vh; }
-            .modal-scroll-area { grid-template-columns: 1fr; }
-            .modal-left { border-right: none; border-bottom: 1px solid #e2e8f0; }
+        @media (max-width: 900px) {
+            .modal-content { height: 90vh; flex-direction: column; }
+            .modal-scroll-area { flex-direction: column; overflow-y: auto; }
+            .modal-left, .modal-right { flex: none; padding: 25px; border-right: none; }
+            .close-btn { top: 10px; right: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         }
     </style>
 </head>
 <body>
-
-<header>
-    <h1 class="logo-text">Global Teacher Catalog</h1>
-</header>
-
-<div class="filter-wrapper">
-    <div class="filter-container" id="filter-box">
-        <button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button>
-    </div>
-</div>
 
 <div class="container">
     <div id="grid" class="grid"></div>
@@ -123,20 +128,35 @@
                 <div class="video-container">
                     <div id="m-video" class="video-box"></div>
                 </div>
-                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom:15px;">Kinh nghiệm & Bằng cấp</h3>
+                <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom:20px; font-weight: 700;">Kinh nghiệm & Bằng cấp</h3>
                 <div id="m-certs"></div>
-                <h3 style="margin-top: 25px; font-size: 1.1rem;">Giới thiệu chi tiết</h3>
-                <p id="m-bio" style="font-size: 14px; color: #64748b; line-height: 1.6; white-space: pre-line;"></p>
+                
+                <h3 style="margin-top: 35px; font-size: 1.2rem; font-weight: 700;">Giới thiệu chi tiết</h3>
+                <p id="m-bio" style="font-size: 15px; color: #475569; line-height: 1.7; white-space: pre-line;"></p>
             </div>
+
             <div class="modal-right">
-                <h2 style="font-size: 1.3rem; margin-top: 5px; margin-bottom: 10px;">Đặt lịch phỏng vấn</h2>
-                <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 25px;">Hỗ trợ kết nối nhanh qua Zalo.</p>
+                <h2 style="font-size: 1.5rem; margin-top: 10px; margin-bottom: 8px; font-weight: 800;">Đặt lịch phỏng vấn</h2>
+                <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 30px;">Vui lòng để lại thông tin, chúng tôi sẽ kết nối bạn qua Zalo.</p>
+                
                 <form action="https://formspree.io/f/xjgglrrz" method="POST">
                     <input type="hidden" id="f-teacher" name="Giao_Vien">
-                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" required></div>
-                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" required></div>
-                    <div class="form-group"><label>Giờ hẹn mong muốn</label><input type="text" name="Time" placeholder="VD: 14h chiều thứ 4"></div>
-                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3"></textarea></div>
+                    <div class="form-group">
+                        <label>Trung tâm / Đối tác *</label>
+                        <input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại Zalo *</label>
+                        <input type="tel" name="Phone" placeholder="Số điện thoại liên hệ" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ hẹn mong muốn</label>
+                        <input type="text" name="Time" placeholder="VD: 14h chiều thứ 4">
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú thêm</label>
+                        <textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể của bạn..."></textarea>
+                    </div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>
             </div>
@@ -155,57 +175,39 @@
         return (match && match[2].length === 11) ? match[2] : null;
     }
 
+    // Hàm parse CSV cơ bản
     function parseCSV(text) {
-        const rows = []; let row = []; let cell = ''; let inQuotes = false;
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            if (char === '"') inQuotes = !inQuotes;
-            else if (char === ',' && !inQuotes) { row.push(cell.trim()); cell = ''; }
-            else if ((char === '\n' || char === '\r') && !inQuotes) {
-                if (cell || row.length) { row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
-            } else cell += char;
-        }
-        if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
-        return rows;
+        const rows = text.split('\n').filter(r => r.trim());
+        return rows.map(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // Regex để tránh split dấu phẩy trong ngoặc kép
+            return cols.map(c => c.replace(/^"|"$/g, '').trim());
+        });
     }
 
     async function init() {
         try {
             const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
             const text = await res.text();
-            const rows = parseCSV(text);
-            teachers = rows.slice(1).map(col => ({
-                id: col[0], name: col[1], country: col[2], status: col[3] || "Available",
-                img: col[4], cert: col[5] || "", bio: col[6] || "Đang cập nhật...", video: col[7] || ""
-            })).filter(t => t.name && !t.name.includes('http'));
-
-            const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
-            countries.forEach(c => {
-                document.getElementById('filter-box').innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`;
-            });
-            render(teachers);
-        } catch (e) { console.error(e); }
+            const data = parseCSV(text);
+            teachers = data.slice(1).map(col => ({
+                id: col[0], name: col[1], country: col[2], img: col[4], cert: col[5] || "", bio: col[6] || "", video: col[7] || ""
+            })).filter(t => t.name);
+            render();
+        } catch (e) { console.error("Lỗi tải dữ liệu:", e); }
     }
 
-    function render(list) {
-        document.getElementById('grid').innerHTML = list.map(t => `
+    function render() {
+        document.getElementById('grid').innerHTML = teachers.map(t => `
             <div class="card" onclick="openModal('${t.id}')">
                 <div class="card-img-box">
                     <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/300x400'">
                     <div class="badge-country">${t.country}</div>
                 </div>
                 <div class="card-content">
-                    <span class="status-tag">Sẵn sàng</span>
                     <h3 class="teacher-name">${t.name}</h3>
-                    <div class="tags-container">${t.cert.split(';').map(c => `<span class="tag">${c.trim()}</span>`).join('')}</div>
+                    <div>${t.cert.split(';').map(c => `<span class="tag">${c.trim()}</span>`).join('')}</div>
                 </div>
             </div>`).join('');
-    }
-
-    function filterBy(c, btn) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        render(c === 'All' ? teachers : teachers.filter(t => t.country === c));
     }
 
     function openModal(id) {
@@ -219,7 +221,7 @@
         const vId = getYoutubeId(t.video);
         document.getElementById('m-video').innerHTML = vId ? 
             `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
-            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
+            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white;">Video đang cập nhật</div>`;
 
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
