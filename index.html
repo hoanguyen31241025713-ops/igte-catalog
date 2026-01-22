@@ -26,19 +26,24 @@
         .filter-btn.active { background: var(--primary); color: white; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        /* CARD: Chỉnh kích thước ngang dọc cân đối */
         .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .card-img-box { width: 100%; height: 280px; position: relative; }
+        .card-img-box { width: 100%; height: 250px; position: relative; background: #eceff1; } /* Ảnh cố định 250px chuẩn */
         .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
-        .status-tag { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px; width: fit-content; }
-        .teacher-name { font-size: 1.2rem; font-weight: 700; margin: 0 0 10px 0; color: #0f172a; }
-        .tags-container { display: flex; flex-wrap: wrap; gap: 5px; }
-        .tag { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+        .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; z-index: 2; }
+        
+        .card-content { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; }
+        .status-tag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 8px; width: fit-content; }
+        .teacher-name { font-size: 1.2rem; font-weight: 700; margin: 0 0 8px 0; color: #0f172a; }
 
-        /* MODAL CÂN ĐỐI */
+        /* TAGS: Kích thước nhỏ 11px giống hình mẫu */
+        .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #f1f5f9; color: #475569; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid #e2e8f0; }
+
+        /* MODAL: Tỉ lệ cân đối 1.5 : 1 */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(15, 23, 42, 0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
@@ -48,40 +53,35 @@
             max-height: 90vh; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
         }
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #94a3b8; z-index: 110; }
+        
         .modal-scroll-area { display: grid; grid-template-columns: 1.5fr 1fr; width: 100%; max-height: 90vh; overflow-y: auto; }
         .modal-left { padding: 40px; border-right: 1px solid #f1f5f9; }
-        .modal-right { background: #f9fbff; padding: 40px; display: flex; flex-direction: column; }
-
-        /* VIDEO & INFO */
-        .video-container { width: 100%; margin-bottom: 25px; }
-        .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
+        .modal-right { background: #f9fbff; padding: 40px; }
+        
+        .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 25px; }
         .exp-title { color: var(--primary); font-size: 1.15rem; font-weight: 700; margin-bottom: 15px; }
+        .exp-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: #334155; }
+        .exp-bar { width: 3px; height: 16px; background: var(--primary); border-radius: 2px; }
         
-        /* Hiển thị 1 dòng giống ảnh */
-        .exp-list-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; }
-        .exp-item { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #334155; border-left: 3px solid var(--primary); padding-left: 10px; }
+        .bio-title { margin-top: 25px; font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+        .bio-text { font-size: 14.5px; color: #64748b; line-height: 1.6; white-space: pre-line; }
 
-        .bio-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
-        .bio-text { font-size: 14.5px; color: #64748b; line-height: 1.6; }
-
-        /* FORM */
-        .form-title { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 0 0 8px 0; }
+        /* FORM & BOOKED MESSAGE */
+        .form-title { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; }
         .form-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; display: block; }
-        .form-group { margin-bottom: 18px; }
+        .form-group { margin-bottom: 15px; }
         label { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-family: inherit; }
-        .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 5px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
+        .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
         
-        /* Thông báo khi giáo viên đã bận */
-        .booked-notice { 
-            background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; 
-            padding: 20px; border-radius: 12px; text-align: center; margin: auto 0;
+        .booked-notice {
+            background: #fff1f2; border: 1px dashed #fb7185; color: #9f1239;
+            padding: 25px; border-radius: 16px; text-align: center; margin-top: 20px;
         }
-        .booked-notice b { display: block; font-size: 16px; margin-bottom: 5px; }
 
         @media (max-width: 850px) {
             .modal-scroll-area { grid-template-columns: 1fr; }
-            .modal-left { border-right: none; border-bottom: 1px solid #f1f5f9; }
+            .modal-left, .modal-right { padding: 30px; }
         }
     </style>
 </head>
@@ -110,12 +110,11 @@
                     <div id="m-video" class="video-box"></div>
                 </div>
                 <h3 class="exp-title">Kinh nghiệm & Bằng cấp</h3>
-                <div id="m-certs" class="exp-list-row"></div>
-                
+                <div id="m-certs"></div>
                 <h3 class="bio-title">Giới thiệu chi tiết</h3>
                 <p id="m-bio" class="bio-text"></p>
             </div>
-            <div class="modal-right" id="modal-form-side">
+            <div class="modal-right" id="modal-action-area">
                 </div>
         </div>
     </div>
@@ -152,9 +151,14 @@
             const text = await res.text();
             const rows = parseCSV(text);
             teachers = rows.slice(1).map(col => ({
-                id: col[0], name: col[1], country: col[2], 
+                id: col[0], 
+                name: col[1], 
+                country: col[2], 
                 status: col[3] ? col[3].trim() : "Available",
-                img: col[4], cert: col[5] || "", bio: col[6] || "Đang cập nhật...", video: col[7] || ""
+                img: col[4], 
+                cert: col[5] || "", 
+                bio: col[6] || "Đang cập nhật...", 
+                video: col[7] || ""
             })).filter(t => t.name && !t.name.includes('http'));
 
             const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
@@ -175,7 +179,7 @@
             return `
             <div class="card" onclick="openModal('${t.id}')">
                 <div class="card-img-box">
-                    <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/300x400'">
+                    <img src="${t.img}" class="card-img" onerror="this.src='https://via.placeholder.com/400x500'">
                     <div class="badge-country">${t.country}</div>
                 </div>
                 <div class="card-content">
@@ -197,12 +201,22 @@
         const t = teachers.find(x => x.id === id);
         if(!t) return;
 
-        const isAvail = t.status.toLowerCase() === 'available';
-        const formContainer = document.getElementById('modal-form-side');
+        // Xử lý thông tin bên trái
+        document.getElementById('m-bio').innerText = t.bio;
+        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => 
+            `<div class="exp-item"><div class="exp-bar"></div><span>${c.trim()}</span></div>`).join('');
+        
+        const vId = getYoutubeId(t.video);
+        document.getElementById('m-video').innerHTML = vId ? 
+            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
+            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
 
-        // Logic ẩn/hiện form đặt lịch
+        // Tính năng: Kiểm tra trạng thái để hiển thị Form hoặc Thông báo khóa
+        const actionArea = document.getElementById('modal-action-area');
+        const isAvail = t.status.toLowerCase() === 'available';
+
         if (isAvail) {
-            formContainer.innerHTML = `
+            actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
                 <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
                 <form action="https://formspree.io/f/xjgglrrz" method="POST">
@@ -214,21 +228,13 @@
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>`;
         } else {
-            formContainer.innerHTML = `
+            actionArea.innerHTML = `
                 <div class="booked-notice">
-                    <b>KHÔNG THỂ ĐẶT LỊCH</b>
-                    Giáo viên hiện đang ở trạng thái "${t.status}". Vui lòng chọn giáo viên khác hoặc quay lại sau.
+                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT</h3>
+                    <p style="font-size: 14px; margin: 0;">Hiện tại giáo viên <b>${t.name}</b> đang ở trạng thái <b>"${t.status}"</b> nên hệ thống tạm khóa tính năng đặt lịch.</p>
+                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Bạn vẫn có thể xem Profile và Video mô tả bên cạnh.</p>
                 </div>`;
         }
-
-        document.getElementById('m-bio').innerText = t.bio;
-        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => 
-            `<div class="exp-item"><span>${c.trim()}</span></div>`).join('');
-        
-        const vId = getYoutubeId(t.video);
-        document.getElementById('m-video').innerHTML = vId ? 
-            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
-            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
 
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
