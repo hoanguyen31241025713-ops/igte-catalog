@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
+            --primary: #2b63e1; /* Màu xanh đậm mới theo hình */
             --bg: #f8fafc;
             --text-main: #1e293b;
             --text-sub: #64748b;
@@ -17,7 +17,7 @@
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; color: var(--text-main); line-height: 1.5; }
 
-        /* HEADER & FILTERS */
+        /* HEADER & FILTERS - GIỮ NGUYÊN */
         header { background: var(--white); padding: 25px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; }
         .filter-wrapper { max-width: 800px; margin: 25px auto; padding: 0 20px; display: flex; justify-content: center; }
@@ -25,7 +25,7 @@
         .filter-btn { padding: 8px 16px; border: none; background: transparent; border-radius: 99px; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-sub); transition: 0.2s; }
         .filter-btn.active { background: var(--primary); color: white; }
 
-        /* GRID SYSTEM */
+        /* GRID SYSTEM - GIỮ NGUYÊN */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
@@ -39,69 +39,78 @@
         .tags-container { display: flex; flex-wrap: wrap; gap: 5px; }
         .tag { background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
 
-        /* MODAL CHỈNH SỬA TỈ LỆ VÀ THANH CUỘN */
+        /* MODAL - CHỈNH SỬA THEO HÌNH */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
+            background: rgba(15, 23, 42, 0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
         }
         .modal-content { 
             background: var(--white); 
-            max-width: 1000px; 
+            max-width: 1050px; /* To hơn 1 chút */
             width: 100%; 
-            border-radius: 20px; 
-            max-height: 85vh; 
+            border-radius: 24px; 
+            max-height: 90vh; 
             position: relative; 
             overflow: hidden; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-            display: block; /* Chuyển về block để scroll-area quản lý grid */
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
         }
         
         .close-btn { 
-            position: absolute; 
-            top: 15px; 
-            right: 20px; 
-            font-size: 28px; 
-            cursor: pointer; 
-            color: #94a3b8; 
-            z-index: 110; 
-            line-height: 1;
-            transition: 0.2s;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 20px; right: 25px; font-size: 24px; 
+            cursor: pointer; color: #94a3b8; z-index: 110; transition: 0.2s;
         }
-        .close-btn:hover { color: var(--text-main); background: #fff; }
+        .close-btn:hover { color: var(--text-main); }
 
         .modal-scroll-area {
             display: grid;
-            grid-template-columns: 1.8fr 1fr; /* Chia tỉ lệ 65% - 35% */
+            grid-template-columns: 1.7fr 1.1fr; /* Tăng độ rộng cột phải (Form đặt lịch) */
             width: 100%;
-            max-height: 85vh; 
-            overflow-y: auto; 
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .modal-left { padding: 40px; border-right: 1px solid #f1f5f9; }
-        .modal-right { background: #f8fafc; padding: 40px; }
+        .modal-left { padding: 45px; border-right: 1px solid #f1f5f9; }
+        .modal-right { background: #f9fbff; padding: 45px; }
 
-        .video-container { width: 100%; max-width: 500px; margin: 0 auto 30px auto; }
-        .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        /* Video Container - Căn lề giống hình */
+        .video-container { width: 100%; margin-bottom: 35px; }
+        .video-box { 
+            aspect-ratio: 16/9; 
+            background: #000; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
         
-        .exp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 14px; }
-        .exp-bar { width: 3px; height: 18px; background: var(--primary); border-radius: 2px; }
+        .exp-title { color: var(--primary); font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; }
+        .exp-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 15px; font-weight: 500; color: #334155; }
+        .exp-bar { width: 4px; height: 20px; background: var(--primary); border-radius: 4px; }
 
-        .form-group { margin-bottom: 15px; }
-        label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; display: block; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; font-family: inherit; }
-        .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .bio-title { margin-top: 35px; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 15px; }
+        .bio-text { font-size: 15px; color: #64748b; line-height: 1.7; white-space: pre-line; }
+
+        /* FORM ĐẶT LỊCH - GIỐNG HÌNH */
+        .form-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; }
+        .form-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 30px; display: block; }
+        .form-group { margin-bottom: 20px; }
+        label { font-size: 13.5px; font-weight: 600; color: #334155; margin-bottom: 8px; display: block; }
+        input, textarea { 
+            width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; 
+            font-size: 14px; font-family: inherit; transition: 0.2s; background: #fff;
+        }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(43, 99, 225, 0.1); }
+        
+        .btn-submit { 
+            width: 100%; padding: 16px; background: var(--primary); color: white; border: none; 
+            border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; 
+            margin-top: 10px; transition: 0.3s; letter-spacing: 0.5px;
+        }
+        .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
 
         @media (max-width: 850px) {
             .modal-scroll-area { grid-template-columns: 1fr; }
-            .modal-left { border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .close-btn { top: 10px; right: 10px; }
+            .modal-left, .modal-right { padding: 30px; }
+            .modal-left { border-right: none; border-bottom: 1px solid #f1f5f9; }
         }
     </style>
 </head>
@@ -130,20 +139,34 @@
                 <div class="video-container">
                     <div id="m-video" class="video-box"></div>
                 </div>
-                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom:15px; font-weight: 700;">Kinh nghiệm & Bằng cấp</h3>
+                <h3 class="exp-title">Kinh nghiệm & Bằng cấp</h3>
                 <div id="m-certs"></div>
-                <h3 style="margin-top: 25px; font-size: 1.1rem; font-weight: 700;">Giới thiệu chi tiết</h3>
-                <p id="m-bio" style="font-size: 14px; color: #475569; line-height: 1.7; white-space: pre-line;"></p>
+                
+                <h3 class="bio-title">Giới thiệu chi tiết</h3>
+                <p id="m-bio" class="bio-text"></p>
             </div>
             <div class="modal-right">
-                <h2 style="font-size: 1.4rem; margin-top: 5px; margin-bottom: 10px; font-weight: 800;">Đặt lịch phỏng vấn</h2>
-                <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 25px;">Hỗ trợ kết nối nhanh qua Zalo.</p>
+                <h2 class="form-title">Đặt lịch phỏng vấn</h2>
+                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
+                
                 <form action="https://formspree.io/f/xjgglrrz" method="POST">
                     <input type="hidden" id="f-teacher" name="Giao_Vien">
-                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị" required></div>
-                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="Số điện thoại" required></div>
-                    <div class="form-group"><label>Giờ hẹn mong muốn</label><input type="text" name="Time" placeholder="VD: 14h chiều thứ 4"></div>
-                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể..."></textarea></div>
+                    <div class="form-group">
+                        <label>Trung tâm / Đối tác *</label>
+                        <input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại Zalo *</label>
+                        <input type="tel" name="Phone" placeholder="09xx xxx xxx" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Khung giờ phỏng vấn mong muốn</label>
+                        <input type="text" name="Time" placeholder="Ví dụ: Sáng thứ 3, 10h">
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú thêm</label>
+                        <textarea name="Note" rows="4" placeholder="Yêu cầu cụ thể về kỹ năng sư phạm, độ tuổi học viên..."></textarea>
+                    </div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>
             </div>
