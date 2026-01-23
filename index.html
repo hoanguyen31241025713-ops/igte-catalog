@@ -177,13 +177,15 @@
             const tempBooked = getTemporaryBooked();
 
             teachers = rows.slice(1).map(col => {
-                let statusFromServer = col[3] ? col[3].trim() : "Available";
-                let finalStatus = statusFromServer;
+                let sheetStatus = col[3] ? col[3].trim() : "Available";
+                let finalStatus = sheetStatus;
 
-                // LOGIC CẬP NHẬT: Chỉ ép sang Pending nếu trên Sheet đang là Available
-                // Nếu bạn đổi Sheet sang "Booked" hoặc bất cứ gì khác, nó sẽ theo Sheet 100%
-                if (statusFromServer.toLowerCase() === 'available' && tempBooked.includes(col[0])) {
-                    finalStatus = "Pending..."; 
+                // CHỈ HIỆN PENDING KHI TRÊN SHEET ĐANG LÀ AVAILABLE
+                // Nếu bạn đổi Sheet sang Booked hay Avai, nó sẽ lấy đúng chữ trên Sheet
+                if (sheetStatus.toLowerCase() === 'available') {
+                    if (tempBooked.includes(col[0])) {
+                        finalStatus = "Pending..."; 
+                    }
                 }
 
                 return {
@@ -213,7 +215,12 @@
             const lowStatus = t.status.toLowerCase();
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
-            const statusLabel = isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status);
+            
+            // Hiển thị nhãn tiếng Việt
+            let statusLabel = t.status;
+            if(isAvail) statusLabel = 'Sẵn sàng';
+            if(isPending) statusLabel = 'Đang chờ xử lý';
+
             let statusColor = '#dc2626'; let statusBg = '#fee2e2';
             if(isAvail) { statusColor = '#059669'; statusBg = '#ecfdf5'; }
             else if (isPending) { statusColor = '#d97706'; statusBg = '#fff7ed'; }
