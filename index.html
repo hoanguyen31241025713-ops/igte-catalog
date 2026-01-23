@@ -26,8 +26,6 @@
         .filter-btn.active { background: var(--primary); color: white; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
-        
-        /* ĐIỀU CHỈNH TẠI ĐÂY: minmax(250px, 1fr) và gap: 15px để vừa 4 cột */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         
         .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
@@ -121,6 +119,21 @@
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
     let teachers = [];
 
+    // Lấy danh sách ID đã đặt từ trình duyệt
+    function getTemporaryBooked() {
+        const data = localStorage.getItem('booked_teachers');
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Lưu ID giáo viên vừa được đặt
+    function saveTemporaryBook(id) {
+        let booked = getTemporaryBooked();
+        if(!booked.includes(id)) {
+            booked.push(id);
+            localStorage.setItem('booked_teachers', JSON.stringify(booked));
+        }
+    }
+
     function getYoutubeId(url) {
         if (!url) return null;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -147,16 +160,25 @@
             const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
             const text = await res.text();
             const rows = parseCSV(text);
-            teachers = rows.slice(1).map(col => ({
-                id: col[0], 
-                name: col[1], 
-                country: col[2], 
-                status: col[3] ? col[3].trim() : "Available",
-                img: col[4], 
-                cert: col[5] || "", 
-                bio: col[6] || "Đang cập nhật...", 
-                video: col[7] || ""
-            })).filter(t => t.name && !t.name.includes('http'));
+            const tempBooked = getTemporaryBooked();
+
+            teachers = rows.slice(1).map(col => {
+                let status = col[3] ? col[3].trim() : "Available";
+                // Nếu giáo viên có trong danh sách đặt tạm thời, đổi status
+                if (tempBooked.includes(col[0]) && status.toLowerCase() === 'available') {
+                    status = "Pending..."; 
+                }
+                return {
+                    id: col[0], 
+                    name: col[1], 
+                    country: col[2], 
+                    status: status,
+                    img: col[4], 
+                    cert: col[5] || "", 
+                    bio: col[6] || "Đang cập nhật...", 
+                    video: col[7] || ""
+                };
+            }).filter(t => t.name && !t.name.includes('http'));
 
             const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
             countries.forEach(c => {
@@ -168,10 +190,19 @@
 
     function render(list) {
         document.getElementById('grid').innerHTML = list.map(t => {
-            const isAvail = t.status.toLowerCase() === 'available';
+            const lowStatus = t.status.toLowerCase();
+            const isAvail = lowStatus === 'available';
+            const isPending = lowStatus === 'pending...';
+            
             const statusLabel = isAvail ? 'Sẵn sàng' : t.status;
-            const statusColor = isAvail ? '#059669' : '#dc2626';
-            const statusBg = isAvail ? '#ecfdf5' : '#fee2e2';
+            let statusColor = '#dc2626'; // Đỏ mặc định cho Bận
+            let statusBg = '#fee2e2';
+
+            if(isAvail) {
+                statusColor = '#059669'; statusBg = '#ecfdf5';
+            } else if (isPending) {
+                statusColor = '#d97706'; statusBg = '#fff7ed'; // Màu cam cho Pending
+            }
 
             return `
             <div class="card" onclick="openModal('${t.id}')">
@@ -194,6 +225,12 @@
         render(c === 'All' ? teachers : teachers.filter(t => t.country === c));
     }
 
+    function handleFormSubmit(e, id) {
+        // Lưu trạng thái tạm thời trước khi form gửi đi
+        saveTemporaryBook(id);
+        // Form sẽ tự động submit nhờ thuộc tính mặc định
+    }
+
     function openModal(id) {
         const t = teachers.find(x => x.id === id);
         if(!t) return;
@@ -214,7 +251,7 @@
             actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
                 <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
-                <form action="https://formspree.io/f/xjgglrrz" method="POST">
+                <form action="https://formspree.io/f/xjgglrrz" method="POST" onsubmit="handleFormSubmit(event, '${t.id}')">
                     <input type="hidden" name="Giao_Vien" value="${t.name}">
                     <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required></div>
                     <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="09xx xxx xxx" required></div>
@@ -223,11 +260,15 @@
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>`;
         } else {
+            const noticeTitle = t.status === "Pending..." ? "ĐANG CHỜ XÁC NHẬN" : "GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT";
+            const noticeColor = t.status === "Pending..." ? "#d97706" : "#9f1239";
+            const noticeBg = t.status === "Pending..." ? "#fff7ed" : "#fff1f2";
+
             actionArea.innerHTML = `
-                <div class="booked-notice">
-                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT</h3>
-                    <p style="font-size: 14px; margin: 0;">Hiện tại giáo viên <b>${t.name}</b> đang ở trạng thái <b>"${t.status}"</b> nên hệ thống tạm khóa tính năng đặt lịch.</p>
-                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Bạn vẫn có thể xem Profile và Video mô tả bên cạnh.</p>
+                <div class="booked-notice" style="background: ${noticeBg}; border-color: ${noticeColor}; color: ${noticeColor};">
+                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">${noticeTitle}</h3>
+                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng để đặt lịch thêm.</p>
+                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Vui lòng chọn giáo viên khác hoặc quay lại sau.</p>
                 </div>`;
         }
 
