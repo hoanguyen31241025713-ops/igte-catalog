@@ -134,7 +134,6 @@
         localStorage.setItem('booked_teachers_timed', JSON.stringify(list));
     }
 
-    // Hàm bổ trợ để xóa ID khỏi bộ nhớ máy khách khi trạng thái Sheet thay đổi
     function clearTeacherFromLocal(id) {
         let list = JSON.parse(localStorage.getItem('booked_teachers_timed') || '[]');
         let newList = list.filter(item => item.id !== id);
@@ -183,28 +182,14 @@
             teachers = rows.slice(1).map(col => {
                 let sheetStatus = col[3] ? col[3].trim() : "Available";
                 let finalStatus = sheetStatus;
-
-                // LOGIC CẢI TIẾN ĐỂ ĐỒNG BỘ:
-                // Nếu trạng thái trên Sheet khác Available -> Xóa luôn ID khỏi bộ nhớ tạm (nếu có)
                 if (sheetStatus.toLowerCase() !== 'available') {
-                    if (tempBookedIds.includes(col[0])) {
-                        clearTeacherFromLocal(col[0]);
-                    }
+                    if (tempBookedIds.includes(col[0])) clearTeacherFromLocal(col[0]);
                 } 
-                // Nếu Sheet là Available mà trong máy khách vẫn còn vết đặt lịch -> Hiện Pending
-                else if (tempBookedIds.includes(col[0])) {
-                    finalStatus = "Pending...";
-                }
+                else if (tempBookedIds.includes(col[0])) finalStatus = "Pending...";
 
                 return {
-                    id: col[0], 
-                    name: col[1], 
-                    country: col[2], 
-                    status: finalStatus,
-                    img: col[4], 
-                    cert: col[5] || "", 
-                    bio: col[6] || "Đang cập nhật...", 
-                    video: col[7] || ""
+                    id: col[0], name: col[1], country: col[2], status: finalStatus,
+                    img: col[4], cert: col[5] || "", bio: col[6] || "Đang cập nhật...", video: col[7] || ""
                 };
             }).filter(t => t.name && !t.name.includes('http'));
 
@@ -223,14 +208,9 @@
             const lowStatus = t.status.toLowerCase();
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
-            
-            let statusLabel = t.status;
-            if(isAvail) statusLabel = 'Sẵn sàng';
-            if(isPending) statusLabel = 'Đang chờ xử lý';
-
-            let statusColor = '#dc2626'; let statusBg = '#fee2e2';
-            if(isAvail) { statusColor = '#059669'; statusBg = '#ecfdf5'; }
-            else if (isPending) { statusColor = '#d97706'; statusBg = '#fff7ed'; }
+            let statusLabel = isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status);
+            let statusColor = isAvail ? '#059669' : (isPending ? '#d97706' : '#dc2626');
+            let statusBg = isAvail ? '#ecfdf5' : (isPending ? '#fff7ed' : '#fee2e2');
 
             return `
             <div class="card" onclick="openModal('${t.id}')">
@@ -256,6 +236,15 @@
     async function handleFormSubmit(e, id) {
         e.preventDefault();
         const form = e.target;
+        
+        // TỰ ĐỘNG GÁN NGÀY GIỜ VIỆT NAM VÀO TRƯỜNG ẨN TRƯỚC KHI GỬI
+        const now = new Date();
+        const optionsDate = { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' };
+        const optionsTime = { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        
+        form.querySelector('[name="0_Ngay_VN"]').value = now.toLocaleDateString('vi-VN', optionsDate);
+        form.querySelector('[name="1_Gio_VN"]').value = now.toLocaleTimeString('vi-VN', optionsTime);
+
         const btn = form.querySelector('.btn-submit');
         btn.disabled = true;
         btn.innerText = "ĐANG GỬI...";
@@ -278,6 +267,7 @@
         } catch (error) {
             alert("Lỗi kết nối.");
             btn.disabled = false;
+            btn.innerText = "XÁC NHẬN ĐẶT LỊCH";
         }
     }
 
@@ -293,9 +283,12 @@
         if (t.status.toLowerCase() === 'available') {
             actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
-                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
+                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận sớm nhất.</span>
                 <form action="https://formspree.io/f/xjgglrrz" method="POST" onsubmit="handleFormSubmit(event, '${t.id}')">
+                    <input type="hidden" name="0_Ngay_VN" value="">
+                    <input type="hidden" name="1_Gio_VN" value="">
                     <input type="hidden" name="Giao_Vien" value="${t.name}">
+
                     <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required></div>
                     <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="09xx xxx xxx" required></div>
                     <div class="form-group"><label>Khung giờ phỏng vấn mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng thứ 3, 10h"></div>
@@ -309,8 +302,7 @@
             actionArea.innerHTML = `
                 <div class="booked-notice" style="background: ${noticeBg}; border-color: ${noticeColor}; color: ${noticeColor};">
                     <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">${noticeTitle}</h3>
-                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng để đặt lịch thêm.</p>
-                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Vui lòng chọn giáo viên khác hoặc quay lại sau.</p>
+                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng.</p>
                 </div>`;
         }
         document.getElementById('modal').style.display = 'flex';
