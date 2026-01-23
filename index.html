@@ -18,7 +18,7 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; color: var(--text-main); line-height: 1.5; }
 
         header { background: var(--white); padding: 25px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; }
+        .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; cursor: pointer; user-select: none; }
         
         .filter-wrapper { max-width: 800px; margin: 25px auto; padding: 0 20px; display: flex; justify-content: center; }
         .filter-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; background: #fff; padding: 6px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -85,7 +85,7 @@
 <body>
 
 <header>
-    <h1 class="logo-text">Global Teacher Catalog</h1>
+    <h1 class="logo-text" onclick="adminReset()">Global Teacher Catalog</h1>
 </header>
 
 <div class="filter-wrapper">
@@ -103,9 +103,7 @@
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <div class="modal-scroll-area">
             <div class="modal-left">
-                <div class="video-container">
-                    <div id="m-video" class="video-box"></div>
-                </div>
+                <div id="m-video" class="video-box"></div>
                 <h3 class="exp-title">Kinh nghiệm & Bằng cấp</h3>
                 <div id="m-certs"></div>
                 <h3 class="bio-title">Giới thiệu chi tiết</h3>
@@ -118,19 +116,48 @@
 
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
+    
+    // 4 tiếng = 4 * 60 * 60 * 1000 miligiây
+    const RESET_TIME = 4 * 60 * 60 * 1000; 
     let teachers = [];
 
+    // Lấy danh sách đang chờ (có kiểm tra thời gian 4h)
     function getTemporaryBooked() {
-        const data = localStorage.getItem('booked_teachers');
-        return data ? JSON.parse(data) : [];
+        const data = localStorage.getItem('booked_teachers_timed');
+        if (!data) return [];
+        
+        const now = Date.now();
+        let list = JSON.parse(data);
+        
+        // Lọc bỏ những ai đã quá 4 tiếng
+        const validList = list.filter(item => (now - item.time) < RESET_TIME);
+        
+        // Cập nhật lại bộ nhớ nếu có sự thay đổi
+        if (validList.length !== list.length) {
+            localStorage.setItem('booked_teachers_timed', JSON.stringify(validList));
+        }
+        
+        return validList.map(item => item.id);
     }
 
+    // Lưu ID kèm mốc thời gian hiện tại
     function saveTemporaryBook(id) {
-        let booked = getTemporaryBooked();
-        if(!booked.includes(id)) {
-            booked.push(id);
-            localStorage.setItem('booked_teachers', JSON.stringify(booked));
+        let list = JSON.parse(localStorage.getItem('booked_teachers_timed') || '[]');
+        list.push({ id: id, time: Date.now() });
+        localStorage.setItem('booked_teachers_timed', JSON.stringify(list));
+    }
+
+    // Admin Reset: Click 3 lần vào logo
+    let clickCount = 0;
+    function adminReset() {
+        clickCount++;
+        if (clickCount === 3) {
+            localStorage.removeItem('booked_teachers_timed');
+            localStorage.removeItem('booked_teachers'); // Xóa cả cái cũ nếu còn sót
+            alert("Admin: Đã xóa sạch trạng thái Pending trên máy này.");
+            location.reload();
         }
+        setTimeout(() => { clickCount = 0; }, 2000);
     }
 
     function getYoutubeId(url) {
@@ -163,6 +190,7 @@
 
             teachers = rows.slice(1).map(col => {
                 let status = col[3] ? col[3].trim() : "Available";
+                // Nếu có trong danh sách đặt tạm VÀ trong Sheet vẫn là Available -> Hiện Pending
                 if (tempBooked.includes(col[0]) && status.toLowerCase() === 'available') {
                     status = "Pending..."; 
                 }
@@ -229,8 +257,6 @@
         e.preventDefault();
         const form = e.target;
         const btn = form.querySelector('.btn-submit');
-        const originalText = btn.innerText;
-        
         btn.disabled = true;
         btn.innerText = "ĐANG GỬI...";
 
@@ -243,62 +269,42 @@
 
             if (response.ok) {
                 saveTemporaryBook(id);
-                alert("Đặt lịch thành công! Chúng tôi sẽ liên hệ sớm nhất.");
+                alert("Đặt lịch thành công! iGT sẽ liên hệ sớm nhất.");
                 closeModal();
-                window.location.reload(); // Tự động load lại để cập nhật trạng thái Pending
+                location.reload();
             } else {
-                alert("Có lỗi xảy ra, vui lòng thử lại.");
+                alert("Lỗi! Vui lòng thử lại.");
                 btn.disabled = false;
-                btn.innerText = originalText;
+                btn.innerText = "XÁC NHẬN ĐẶT LỊCH";
             }
         } catch (error) {
-            alert("Lỗi kết nối mạng.");
+            alert("Lỗi kết nối.");
             btn.disabled = false;
-            btn.innerText = originalText;
         }
     }
 
     function openModal(id) {
         const t = teachers.find(x => x.id === id);
         if(!t) return;
-
         document.getElementById('m-bio').innerText = t.bio;
-        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => 
-            `<div class="exp-item"><div class="exp-bar"></div><span>${c.trim()}</span></div>`).join('');
-        
+        document.getElementById('m-certs').innerHTML = t.cert.split(';').map(c => `<div class="exp-item"><div class="exp-bar"></div><span>${c.trim()}</span></div>`).join('');
         const vId = getYoutubeId(t.video);
-        document.getElementById('m-video').innerHTML = vId ? 
-            `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : 
-            `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
+        document.getElementById('m-video').innerHTML = vId ? `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
 
         const actionArea = document.getElementById('modal-action-area');
-        const isAvail = t.status.toLowerCase() === 'available';
-
-        if (isAvail) {
+        if (t.status.toLowerCase() === 'available') {
             actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
-                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
                 <form action="https://formspree.io/f/xjgglrrz" method="POST" onsubmit="handleFormSubmit(event, '${t.id}')">
-                    <input type="hidden" name="Giao_Vien" value="${t.name}">
-                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required></div>
-                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="09xx xxx xxx" required></div>
-                    <div class="form-group"><label>Khung giờ phỏng vấn mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng thứ 3, 10h"></div>
-                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể..."></textarea></div>
+                    <input type="hidden" name="Teacher" value="${t.name}">
+                    <div class="form-group"><label>Đơn vị / Trung tâm *</label><input type="text" name="Unit" required></div>
+                    <div class="form-group"><label>Zalo liên hệ *</label><input type="tel" name="Phone" required></div>
+                    <div class="form-group"><label>Thời gian mong muốn</label><input type="text" name="Time"></div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>`;
         } else {
-            const noticeTitle = t.status === "Pending..." ? "ĐANG CHỜ XÁC NHẬN" : "GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT";
-            const noticeColor = t.status === "Pending..." ? "#d97706" : "#9f1239";
-            const noticeBg = t.status === "Pending..." ? "#fff7ed" : "#fff1f2";
-
-            actionArea.innerHTML = `
-                <div class="booked-notice" style="background: ${noticeBg}; border-color: ${noticeColor}; color: ${noticeColor};">
-                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">${noticeTitle}</h3>
-                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng để đặt lịch thêm.</p>
-                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Vui lòng chọn giáo viên khác hoặc quay lại sau.</p>
-                </div>`;
+            actionArea.innerHTML = `<div class="booked-notice"><h3>KHÔNG SẴN SÀNG</h3><p>Giáo viên này đang được xử lý hoặc đã có lịch.</p></div>`;
         }
-
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
