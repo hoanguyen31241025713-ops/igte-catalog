@@ -125,9 +125,6 @@
         const now = Date.now();
         let list = JSON.parse(data);
         const validList = list.filter(item => (now - item.time) < RESET_TIME);
-        if (validList.length !== list.length) {
-            localStorage.setItem('booked_teachers_timed', JSON.stringify(validList));
-        }
         return validList.map(item => item.id);
     }
 
@@ -135,6 +132,13 @@
         let list = JSON.parse(localStorage.getItem('booked_teachers_timed') || '[]');
         list.push({ id: id, time: Date.now() });
         localStorage.setItem('booked_teachers_timed', JSON.stringify(list));
+    }
+
+    // Hàm bổ trợ để xóa ID khỏi bộ nhớ máy khách khi trạng thái Sheet thay đổi
+    function clearTeacherFromLocal(id) {
+        let list = JSON.parse(localStorage.getItem('booked_teachers_timed') || '[]');
+        let newList = list.filter(item => item.id !== id);
+        localStorage.setItem('booked_teachers_timed', JSON.stringify(newList));
     }
 
     let clickCount = 0;
@@ -174,18 +178,22 @@
             const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
             const text = await res.text();
             const rows = parseCSV(text);
-            const tempBooked = getTemporaryBooked();
+            const tempBookedIds = getTemporaryBooked();
 
             teachers = rows.slice(1).map(col => {
                 let sheetStatus = col[3] ? col[3].trim() : "Available";
                 let finalStatus = sheetStatus;
 
-                // CHỈ HIỆN PENDING KHI TRÊN SHEET ĐANG LÀ AVAILABLE
-                // Nếu bạn đổi Sheet sang Booked hay Avai, nó sẽ lấy đúng chữ trên Sheet
-                if (sheetStatus.toLowerCase() === 'available') {
-                    if (tempBooked.includes(col[0])) {
-                        finalStatus = "Pending..."; 
+                // LOGIC CẢI TIẾN ĐỂ ĐỒNG BỘ:
+                // Nếu trạng thái trên Sheet khác Available -> Xóa luôn ID khỏi bộ nhớ tạm (nếu có)
+                if (sheetStatus.toLowerCase() !== 'available') {
+                    if (tempBookedIds.includes(col[0])) {
+                        clearTeacherFromLocal(col[0]);
                     }
+                } 
+                // Nếu Sheet là Available mà trong máy khách vẫn còn vết đặt lịch -> Hiện Pending
+                else if (tempBookedIds.includes(col[0])) {
+                    finalStatus = "Pending...";
                 }
 
                 return {
@@ -216,7 +224,6 @@
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
             
-            // Hiển thị nhãn tiếng Việt
             let statusLabel = t.status;
             if(isAvail) statusLabel = 'Sẵn sàng';
             if(isPending) statusLabel = 'Đang chờ xử lý';
