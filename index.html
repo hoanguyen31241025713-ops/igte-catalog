@@ -177,15 +177,20 @@
             const tempBooked = getTemporaryBooked();
 
             teachers = rows.slice(1).map(col => {
-                let status = col[3] ? col[3].trim() : "Available";
-                if (tempBooked.includes(col[0]) && status.toLowerCase() === 'available') {
-                    status = "Pending..."; 
+                let statusFromServer = col[3] ? col[3].trim() : "Available";
+                let finalStatus = statusFromServer;
+
+                // LOGIC CẬP NHẬT: Chỉ ép sang Pending nếu trên Sheet đang là Available
+                // Nếu bạn đổi Sheet sang "Booked" hoặc bất cứ gì khác, nó sẽ theo Sheet 100%
+                if (statusFromServer.toLowerCase() === 'available' && tempBooked.includes(col[0])) {
+                    finalStatus = "Pending..."; 
                 }
+
                 return {
                     id: col[0], 
                     name: col[1], 
                     country: col[2], 
-                    status: status,
+                    status: finalStatus,
                     img: col[4], 
                     cert: col[5] || "", 
                     bio: col[6] || "Đang cập nhật...", 
