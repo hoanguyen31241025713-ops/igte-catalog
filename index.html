@@ -116,44 +116,32 @@
 
 <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
-    
-    // 4 tiếng = 4 * 60 * 60 * 1000 miligiây
-    const RESET_TIME = 4 * 60 * 60 * 1000; 
+    const RESET_TIME = 4 * 60 * 60 * 1000; // 4 tiếng
     let teachers = [];
 
-    // Lấy danh sách đang chờ (có kiểm tra thời gian 4h)
     function getTemporaryBooked() {
         const data = localStorage.getItem('booked_teachers_timed');
         if (!data) return [];
-        
         const now = Date.now();
         let list = JSON.parse(data);
-        
-        // Lọc bỏ những ai đã quá 4 tiếng
         const validList = list.filter(item => (now - item.time) < RESET_TIME);
-        
-        // Cập nhật lại bộ nhớ nếu có sự thay đổi
         if (validList.length !== list.length) {
             localStorage.setItem('booked_teachers_timed', JSON.stringify(validList));
         }
-        
         return validList.map(item => item.id);
     }
 
-    // Lưu ID kèm mốc thời gian hiện tại
     function saveTemporaryBook(id) {
         let list = JSON.parse(localStorage.getItem('booked_teachers_timed') || '[]');
         list.push({ id: id, time: Date.now() });
         localStorage.setItem('booked_teachers_timed', JSON.stringify(list));
     }
 
-    // Admin Reset: Click 3 lần vào logo
     let clickCount = 0;
     function adminReset() {
         clickCount++;
         if (clickCount === 3) {
             localStorage.removeItem('booked_teachers_timed');
-            localStorage.removeItem('booked_teachers'); // Xóa cả cái cũ nếu còn sót
             alert("Admin: Đã xóa sạch trạng thái Pending trên máy này.");
             location.reload();
         }
@@ -190,7 +178,6 @@
 
             teachers = rows.slice(1).map(col => {
                 let status = col[3] ? col[3].trim() : "Available";
-                // Nếu có trong danh sách đặt tạm VÀ trong Sheet vẫn là Available -> Hiện Pending
                 if (tempBooked.includes(col[0]) && status.toLowerCase() === 'available') {
                     status = "Pending..."; 
                 }
@@ -221,16 +208,10 @@
             const lowStatus = t.status.toLowerCase();
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
-            
             const statusLabel = isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status);
-            let statusColor = '#dc2626'; 
-            let statusBg = '#fee2e2';
-
-            if(isAvail) {
-                statusColor = '#059669'; statusBg = '#ecfdf5';
-            } else if (isPending) {
-                statusColor = '#d97706'; statusBg = '#fff7ed';
-            }
+            let statusColor = '#dc2626'; let statusBg = '#fee2e2';
+            if(isAvail) { statusColor = '#059669'; statusBg = '#ecfdf5'; }
+            else if (isPending) { statusColor = '#d97706'; statusBg = '#fff7ed'; }
 
             return `
             <div class="card" onclick="openModal('${t.id}')">
@@ -259,14 +240,12 @@
         const btn = form.querySelector('.btn-submit');
         btn.disabled = true;
         btn.innerText = "ĐANG GỬI...";
-
         try {
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: new FormData(form),
                 headers: { 'Accept': 'application/json' }
             });
-
             if (response.ok) {
                 saveTemporaryBook(id);
                 alert("Đặt lịch thành công! iGT sẽ liên hệ sớm nhất.");
@@ -295,15 +274,25 @@
         if (t.status.toLowerCase() === 'available') {
             actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
+                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận trong thời gian sớm nhất.</span>
                 <form action="https://formspree.io/f/xjgglrrz" method="POST" onsubmit="handleFormSubmit(event, '${t.id}')">
-                    <input type="hidden" name="Teacher" value="${t.name}">
-                    <div class="form-group"><label>Đơn vị / Trung tâm *</label><input type="text" name="Unit" required></div>
-                    <div class="form-group"><label>Zalo liên hệ *</label><input type="tel" name="Phone" required></div>
-                    <div class="form-group"><label>Thời gian mong muốn</label><input type="text" name="Time"></div>
+                    <input type="hidden" name="Giao_Vien" value="${t.name}">
+                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required></div>
+                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="09xx xxx xxx" required></div>
+                    <div class="form-group"><label>Khung giờ phỏng vấn mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng thứ 3, 10h"></div>
+                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể..."></textarea></div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>`;
         } else {
-            actionArea.innerHTML = `<div class="booked-notice"><h3>KHÔNG SẴN SÀNG</h3><p>Giáo viên này đang được xử lý hoặc đã có lịch.</p></div>`;
+            const noticeTitle = t.status === "Pending..." ? "ĐANG CHỜ XÁC NHẬN" : "GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT";
+            const noticeColor = t.status === "Pending..." ? "#d97706" : "#9f1239";
+            const noticeBg = t.status === "Pending..." ? "#fff7ed" : "#fff1f2";
+            actionArea.innerHTML = `
+                <div class="booked-notice" style="background: ${noticeBg}; border-color: ${noticeColor}; color: ${noticeColor};">
+                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">${noticeTitle}</h3>
+                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng để đặt lịch thêm.</p>
+                    <p style="font-size: 13px; margin-top: 15px; color: #64748b;">Vui lòng chọn giáo viên khác hoặc quay lại sau.</p>
+                </div>`;
         }
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
