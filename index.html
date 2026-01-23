@@ -69,6 +69,7 @@
         label { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
         .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
         
         .booked-notice {
             background: #fff1f2; border: 1px dashed #fb7185; color: #9f1239;
@@ -119,13 +120,11 @@
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
     let teachers = [];
 
-    // Lấy danh sách ID đã đặt từ trình duyệt
     function getTemporaryBooked() {
         const data = localStorage.getItem('booked_teachers');
         return data ? JSON.parse(data) : [];
     }
 
-    // Lưu ID giáo viên vừa được đặt
     function saveTemporaryBook(id) {
         let booked = getTemporaryBooked();
         if(!booked.includes(id)) {
@@ -164,7 +163,6 @@
 
             teachers = rows.slice(1).map(col => {
                 let status = col[3] ? col[3].trim() : "Available";
-                // Nếu giáo viên có trong danh sách đặt tạm thời, đổi status
                 if (tempBooked.includes(col[0]) && status.toLowerCase() === 'available') {
                     status = "Pending..."; 
                 }
@@ -181,8 +179,10 @@
             }).filter(t => t.name && !t.name.includes('http'));
 
             const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
+            const filterBox = document.getElementById('filter-box');
+            filterBox.innerHTML = '<button class="filter-btn active" onclick="filterBy(\'All\', this)">Tất cả</button>';
             countries.forEach(c => {
-                document.getElementById('filter-box').innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`;
+                filterBox.innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`;
             });
             render(teachers);
         } catch (e) { console.error(e); }
@@ -194,14 +194,14 @@
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
             
-            const statusLabel = isAvail ? 'Sẵn sàng' : t.status;
-            let statusColor = '#dc2626'; // Đỏ mặc định cho Bận
+            const statusLabel = isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status);
+            let statusColor = '#dc2626'; 
             let statusBg = '#fee2e2';
 
             if(isAvail) {
                 statusColor = '#059669'; statusBg = '#ecfdf5';
             } else if (isPending) {
-                statusColor = '#d97706'; statusBg = '#fff7ed'; // Màu cam cho Pending
+                statusColor = '#d97706'; statusBg = '#fff7ed';
             }
 
             return `
@@ -225,10 +225,37 @@
         render(c === 'All' ? teachers : teachers.filter(t => t.country === c));
     }
 
-    function handleFormSubmit(e, id) {
-        // Lưu trạng thái tạm thời trước khi form gửi đi
-        saveTemporaryBook(id);
-        // Form sẽ tự động submit nhờ thuộc tính mặc định
+    async function handleFormSubmit(e, id) {
+        e.preventDefault();
+        const form = e.target;
+        const btn = form.querySelector('.btn-submit');
+        const originalText = btn.innerText;
+        
+        btn.disabled = true;
+        btn.innerText = "ĐANG GỬI...";
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                saveTemporaryBook(id);
+                alert("Đặt lịch thành công! Chúng tôi sẽ liên hệ sớm nhất.");
+                closeModal();
+                window.location.reload(); // Tự động load lại để cập nhật trạng thái Pending
+            } else {
+                alert("Có lỗi xảy ra, vui lòng thử lại.");
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        } catch (error) {
+            alert("Lỗi kết nối mạng.");
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
     }
 
     function openModal(id) {
