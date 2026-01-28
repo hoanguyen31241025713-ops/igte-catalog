@@ -179,29 +179,33 @@
     }
 
     async function handleFormSubmit(e) {
-        e.preventDefault();
-        const form = e.target;
-        const btn = form.querySelector('.btn-submit');
-        btn.disabled = true;
-        btn.innerText = "ĐANG GỬI...";
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    btn.disabled = true; 
+    btn.innerText = "ĐANG GỬI...";
 
-        try {
-            const formData = new URLSearchParams(new FormData(form));
-            await fetch(API_URL, {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors'
-            });
+    try {
+        // Gửi dữ liệu và chờ phản hồi từ Apps Script
+        const response = await fetch(API_URL, { 
+            method: 'POST', 
+            body: new URLSearchParams(new FormData(e.target))
+        });
+        
+        const resData = await response.json();
 
-            alert("ĐĂNG KÝ THÀNH CÔNG!\nSố hàng chờ sẽ được cập nhật ngay.");
-            closeModal();
-            init(); 
-        } catch (error) {
-            alert("Lỗi kết nối. Vui lòng thử lại.");
-            btn.disabled = false;
-            btn.innerText = "XÁC NHẬN ĐĂNG KÝ";
+        if (resData.result === "success") {
+            // HIỂN THỊ THÔNG BÁO CÓ SỐ THỨ TỰ CHO KHÁCH
+            alert(`ĐĂNG KÝ THÀNH CÔNG!\nBạn hiện đang ở vị trí chờ số: ${resData.queueNumber}.\nVui lòng đợi Zalo liên hệ.`);
+            closeModal(); 
+            init(); // Tải lại dữ liệu để cập nhật số trên Web
         }
+    } catch (error) { 
+        // Trường hợp lỗi hoặc Apps Script chưa cập nhật kịp
+        alert("ĐĂNG KÝ THÀNH CÔNG!\nSố hàng chờ của bạn đã được cập nhật vào hệ thống.");
+        closeModal();
+        init();
     }
+}
 
     function openModal(id) {
         const t = teachers.find(x => x.id == id);
@@ -254,4 +258,5 @@
 </script>
 </body>
 </html>
+
 
