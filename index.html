@@ -70,6 +70,11 @@
         input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
         .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
         .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+        
+        .booked-notice {
+            background: #fff1f2; border: 1px dashed #fb7185; color: #9f1239;
+            padding: 25px; border-radius: 16px; text-align: center; margin-top: 20px;
+        }
 
         @media (max-width: 850px) {
             .modal-scroll-area { grid-template-columns: 1fr; }
@@ -110,9 +115,8 @@
 </div>
 
 <script>
-    // --- GIỮ NGUYÊN LINK VÀ LOGIC RESET CỦA BẠN ---
-    const API_URL = "https://script.google.com/macros/s/AKfycbxvfyDnZGIzoZ6puGR6MzPao8NQFu2pq0LjtTkFWlW_-q4GOXzJM1Eyq6AHZSZ7J4qU/exec";
-    const RESET_TIME = 4 * 60 * 60 * 1000; 
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVDzexHC9gEFLzMHGn1PUNd4UoM-vh7FfFmRzqIrWUEMLsUaXMwrjAXpZAKkkoZ68jEh7O0kLFVN4m/pub?output=csv";
+    const RESET_TIME = 4 * 60 * 60 * 1000; // 4 tiếng
     let teachers = [];
 
     function getTemporaryBooked() {
@@ -154,37 +158,40 @@
         return (match && match[2].length === 11) ? match[2] : null;
     }
 
-    // --- CHỈ SỬA INIT ĐỂ ĐỌC DỮ LIỆU JSON TỪ APPS SCRIPT ---
+    function parseCSV(text) {
+        const rows = []; let row = []; let cell = ''; let inQuotes = false;
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { row.push(cell.trim()); cell = ''; }
+            else if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (cell || row.length) { row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
+            } else cell += char;
+        }
+        if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+        return rows;
+    }
+
     async function init() {
         try {
-            const res = await fetch(`${API_URL}?cb=${Date.now()}`);
-            const dataFromSheet = await res.json();
+            const res = await fetch(`${SHEET_URL}&cb=${Date.now()}`);
+            const text = await res.text();
+            const rows = parseCSV(text);
             const tempBookedIds = getTemporaryBooked();
 
-            teachers = dataFromSheet.map(col => {
-                let sheetStatus = col.status ? col.status.trim() : "Available";
+            teachers = rows.slice(1).map(col => {
+                let sheetStatus = col[3] ? col[3].trim() : "Available";
                 let finalStatus = sheetStatus;
-                
-                // Logic xử lý Pending của bạn
                 if (sheetStatus.toLowerCase() !== 'available') {
-                    if (tempBookedIds.includes(col.id)) clearTeacherFromLocal(col.id);
+                    if (tempBookedIds.includes(col[0])) clearTeacherFromLocal(col[0]);
                 } 
-                else if (tempBookedIds.includes(col.id)) {
-                    finalStatus = "Pending...";
-                }
+                else if (tempBookedIds.includes(col[0])) finalStatus = "Pending...";
 
                 return {
-                    id: col.id, 
-                    name: col.name, 
-                    country: col.country, 
-                    status: finalStatus,
-                    img: col.img, 
-                    cert: col.cert || "", 
-                    bio: col.bio || "Đang cập nhật...", 
-                    video: col.video || "",
-                    queue: parseInt(col.queue) || 0 // Thêm thông tin hàng chờ
+                    id: col[0], name: col[1], country: col[2], status: finalStatus,
+                    img: col[4], cert: col[5] || "", bio: col[6] || "Đang cập nhật...", video: col[7] || ""
                 };
-            });
+            }).filter(t => t.name && !t.name.includes('http'));
 
             const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
             const filterBox = document.getElementById('filter-box');
@@ -201,11 +208,9 @@
             const lowStatus = t.status.toLowerCase();
             const isAvail = lowStatus === 'available';
             const isPending = lowStatus === 'pending...';
-            
-            // Hiển thị nhãn: Nếu có người chờ ở Sheet thì hiện số, không thì hiện trạng thái của bạn
-            let statusLabel = (t.queue > 0) ? `Hàng chờ: ${t.queue}` : (isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status));
-            let statusColor = (t.queue > 0 || isPending) ? '#d97706' : (isAvail ? '#059669' : '#dc2626');
-            let statusBg = (t.queue > 0 || isPending) ? '#fff7ed' : (isAvail ? '#ecfdf5' : '#fee2e2');
+            let statusLabel = isAvail ? 'Sẵn sàng' : (isPending ? 'Đang chờ xử lý' : t.status);
+            let statusColor = isAvail ? '#059669' : (isPending ? '#d97706' : '#dc2626');
+            let statusBg = isAvail ? '#ecfdf5' : (isPending ? '#fff7ed' : '#fee2e2');
 
             return `
             <div class="card" onclick="openModal('${t.id}')">
@@ -231,22 +236,34 @@
     async function handleFormSubmit(e, id) {
         e.preventDefault();
         const form = e.target;
+        
+        // TỰ ĐỘNG GÁN NGÀY GIỜ VIỆT NAM VÀO TRƯỜNG ẨN TRƯỚC KHI GỬI
+        const now = new Date();
+        const optionsDate = { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' };
+        const optionsTime = { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        
+        form.querySelector('[name="0_Ngay_VN"]').value = now.toLocaleDateString('vi-VN', optionsDate);
+        form.querySelector('[name="1_Gio_VN"]').value = now.toLocaleTimeString('vi-VN', optionsTime);
+
         const btn = form.querySelector('.btn-submit');
         btn.disabled = true;
         btn.innerText = "ĐANG GỬI...";
-
         try {
-            const formData = new URLSearchParams(new FormData(form));
-            await fetch(API_URL, {
+            const response = await fetch(form.action, {
                 method: 'POST',
-                body: formData,
-                mode: 'no-cors'
+                body: new FormData(form),
+                headers: { 'Accept': 'application/json' }
             });
-
-            saveTemporaryBook(id);
-            alert("Đặt lịch thành công! Bạn đã được thêm vào hàng chờ.");
-            closeModal();
-            location.reload();
+            if (response.ok) {
+                saveTemporaryBook(id);
+                alert("Đặt lịch thành công! iGT sẽ liên hệ sớm nhất.");
+                closeModal();
+                location.reload();
+            } else {
+                alert("Lỗi! Vui lòng thử lại.");
+                btn.disabled = false;
+                btn.innerText = "XÁC NHẬN ĐẶT LỊCH";
+            }
         } catch (error) {
             alert("Lỗi kết nối.");
             btn.disabled = false;
@@ -263,28 +280,28 @@
         document.getElementById('m-video').innerHTML = vId ? `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
 
         const actionArea = document.getElementById('modal-action-area');
-        
-        // Cải tiến phần hiển thị số thứ tự trong Modal
-        const queueMsg = t.queue > 0 
-            ? `<div style="background:#fff7ed; padding:10px; border-radius:8px; border:1px solid #ffedd5; margin-bottom:15px; font-size:13px; color:#9a3412;">⚠️ Hiện có <b>${t.queue}</b> người đang chờ. Bạn sẽ ở vị trí số <b>${t.queue + 1}</b>.</div>`
-            : "";
-
-        if (t.status.toLowerCase() === 'available' || t.status === "Pending...") {
+        if (t.status.toLowerCase() === 'available') {
             actionArea.innerHTML = `
                 <h2 class="form-title">Đặt lịch phỏng vấn</h2>
-                ${queueMsg}
-                <form onsubmit="handleFormSubmit(event, '${t.id}')">
+                <span class="form-sub">Sales iGT sẽ liên hệ xác nhận sớm nhất.</span>
+                <form action="https://formspree.io/f/xjgglrrz" method="POST" onsubmit="handleFormSubmit(event, '${t.id}')">
+                    <input type="hidden" name="0_Ngay_VN" value="">
+                    <input type="hidden" name="1_Gio_VN" value="">
                     <input type="hidden" name="Giao_Vien" value="${t.name}">
-                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" required></div>
-                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" required></div>
-                    <div class="form-group"><label>Khung giờ mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng mai 10h"></div>
-                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="2"></textarea></div>
+
+                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" placeholder="Tên đơn vị của bạn" required></div>
+                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" placeholder="09xx xxx xxx" required></div>
+                    <div class="form-group"><label>Khung giờ phỏng vấn mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng thứ 3, 10h"></div>
+                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="3" placeholder="Yêu cầu cụ thể..."></textarea></div>
                     <button type="submit" class="btn-submit">XÁC NHẬN ĐẶT LỊCH</button>
                 </form>`;
         } else {
+            const noticeTitle = t.status === "Pending..." ? "ĐANG CHỜ XÁC NHẬN" : "GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT";
+            const noticeColor = t.status === "Pending..." ? "#d97706" : "#9f1239";
+            const noticeBg = t.status === "Pending..." ? "#fff7ed" : "#fff1f2";
             actionArea.innerHTML = `
-                <div class="booked-notice" style="background: #fff1f2; border-color: #fb7185; color: #9f1239;">
-                    <h3 style="margin:0 0 10px 0;">GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT</h3>
+                <div class="booked-notice" style="background: ${noticeBg}; border-color: ${noticeColor}; color: ${noticeColor};">
+                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">${noticeTitle}</h3>
                     <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng.</p>
                 </div>`;
         }
