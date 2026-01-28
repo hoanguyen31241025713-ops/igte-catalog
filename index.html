@@ -148,29 +148,33 @@
     }
 
     function render(list) {
-        document.getElementById('grid').innerHTML = list.map(t => {
-            const queueNum = parseInt(t.queue) || 0;
-            const lowStatus = (t.status || "").toLowerCase();
-            const isAvail = lowStatus === 'available' || lowStatus === 'sẵn sàng';
-            
-            let statusLabel = queueNum > 0 ? `Hàng chờ: ${queueNum}` : (isAvail ? 'Sẵn sàng' : t.status);
-            let statusColor = queueNum > 0 ? '#d97706' : (isAvail ? '#059669' : '#dc2626');
-            let statusBg = queueNum > 0 ? '#fff7ed' : (isAvail ? '#ecfdf5' : '#fee2e2');
+    document.getElementById('grid').innerHTML = list.map(t => {
+        const q = parseInt(t.queue) || 0;
+        // Kiểm tra xem trạng thái có phải là sẵn sàng không (không phân biệt hoa thường)
+        const isAvail = (t.status || "").toLowerCase().includes("sẵn sàng") || 
+                        (t.status || "").toLowerCase().includes("available");
+        
+        let label, color, bg;
 
-            return `
-            <div class="card" onclick="openModal('${t.id}')">
-                <div class="card-img-box">
-                    <img src="${t.img || 'https://via.placeholder.com/400x500'}" class="card-img" onerror="this.src='https://via.placeholder.com/400x500'">
-                    <div class="badge-country">${t.country || ''}</div>
-                </div>
-                <div class="card-content">
-                    <span class="status-tag" style="background: ${statusBg}; color: ${statusColor};">${statusLabel}</span>
-                    <h3 class="teacher-name">${t.name || 'N/A'}</h3>
-                    <div class="tags-container">${(t.cert || "").split(';').map(c => `<span class="tag">${c.trim()}</span>`).join('')}</div>
-                </div>
-            </div>`;
-        }).join('');
-    }
+        if (!isAvail) {
+            // NẾU ĐÃ ĐẶT LỊCH: Hiện màu đỏ, bất kể hàng chờ
+            label = "Đã được đặt lịch";
+            color = "#dc2626"; // Đỏ
+            bg = "#fee2e2";
+        } else if (q > 0) {
+            // NẾU ĐANG CHỜ: Hiện màu cam
+            label = `Hàng chờ: ${q}`;
+            color = "#d97706"; // Cam
+            bg = "#fff7ed";
+        } else {
+            // NẾU TRỐNG: Hiện màu xanh
+            label = "Sẵn sàng";
+            color = "#059669"; // Xanh lá
+            bg = "#ecfdf5";
+        }
+
+        return `<div class="card" onclick="openModal('${t.id}')">
+            ```
 
     function filterBy(c, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -258,5 +262,6 @@
 </script>
 </body>
 </html>
+
 
 
