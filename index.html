@@ -6,56 +6,113 @@
     <title>Global Teacher Catalog - iGT HCMC</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2b63e1; --bg: #f8fafc; --text-main: #1e293b; --text-sub: #64748b; --white: #ffffff; --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        :root {
+            --primary: #2b63e1;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; color: var(--text-main); line-height: 1.5; }
+
         header { background: var(--white); padding: 25px 20px; text-align: center; border-bottom: 1px solid #e2e8f0; }
         .logo-text { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin: 0; cursor: pointer; user-select: none; }
+        
         .filter-wrapper { max-width: 800px; margin: 25px auto; padding: 0 20px; display: flex; justify-content: center; }
         .filter-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; background: #fff; padding: 6px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .filter-btn { padding: 8px 16px; border: none; background: transparent; border-radius: 99px; cursor: pointer; font-weight: 600; font-size: 13px; color: var(--text-sub); transition: 0.2s; }
         .filter-btn.active { background: var(--primary); color: white; }
+
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 60px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        
         .card { background: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid #f1f5f9; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .card-img-box { width: 100%; height: 250px; position: relative; background: #eceff1; } 
         .card-img { width: 100%; height: 100%; object-fit: cover; }
         .badge-country { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.8); color: white; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; z-index: 2; }
+        
         .card-content { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; }
         .status-tag { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 8px; width: fit-content; }
         .teacher-name { font-size: 1.15rem; font-weight: 700; margin: 0 0 8px 0; color: #0f172a; }
+
         .tags-container { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { background: #f1f5f9; color: #475569; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; border: 1px solid #e2e8f0; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center; }
-        .modal-content { background: var(--white); max-width: 1000px; width: 100%; border-radius: 24px; max-height: 90vh; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); }
+
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(15, 23, 42, 0.6); z-index: 1000; padding: 20px; align-items: center; justify-content: center;
+        }
+        .modal-content { 
+            background: var(--white); max-width: 1000px; width: 100%; border-radius: 24px; 
+            max-height: 90vh; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+        }
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #94a3b8; z-index: 110; }
+        
         .modal-scroll-area { display: grid; grid-template-columns: 1.5fr 1fr; width: 100%; max-height: 90vh; overflow-y: auto; }
         .modal-left { padding: 40px; border-right: 1px solid #f1f5f9; }
         .modal-right { background: #f9fbff; padding: 40px; }
+        
         .video-box { aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 25px; }
         .exp-title { color: var(--primary); font-size: 1.15rem; font-weight: 700; margin-bottom: 15px; }
         .exp-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: #334155; }
         .exp-bar { width: 3px; height: 16px; background: var(--primary); border-radius: 2px; }
+        
         .bio-title { margin-top: 25px; font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
         .bio-text { font-size: 14.5px; color: #64748b; line-height: 1.6; white-space: pre-line; }
+
         .form-title { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 0 0 10px 0; }
+        .form-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 25px; display: block; }
         .form-group { margin-bottom: 15px; }
         label { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block; }
         input, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #fff; }
         .btn-submit { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
         .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-        .booked-notice { background: #fff1f2; border: 1px dashed #fb7185; color: #9f1239; padding: 25px; border-radius: 16px; text-align: center; margin-top: 20px; }
-        @media (max-width: 850px) { .modal-scroll-area { grid-template-columns: 1fr; } .modal-left, .modal-right { padding: 30px; } }
+        
+        .booked-notice {
+            background: #fff1f2; border: 1px dashed #fb7185; color: #9f1239;
+            padding: 25px; border-radius: 16px; text-align: center; margin-top: 20px;
+        }
+
+        @media (max-width: 850px) {
+            .modal-scroll-area { grid-template-columns: 1fr; }
+            .modal-left, .modal-right { padding: 30px; }
+        }
     </style>
 </head>
 <body>
-<header><h1 class="logo-text" onclick="location.reload()">Global Teacher Catalog</h1></header>
-<div class="filter-wrapper"><div class="filter-container" id="filter-box"><button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button></div></div>
-<div class="container"><div id="grid" class="grid"></div></div>
-<div id="modal" class="modal" onclick="if(event.target===this) closeModal()"><div class="modal-content"><span class="close-btn" onclick="closeModal()">&times;</span>
-<div class="modal-scroll-area"><div class="modal-left"><div id="m-video" class="video-box"></div><h3 class="exp-title">Kinh nghiệm & Bằng cấp</h3><div id="m-certs"></div><h3 class="bio-title">Giới thiệu chi tiết</h3><p id="m-bio" class="bio-text"></p></div>
-<div class="modal-right" id="modal-action-area"></div></div></div></div>
+
+<header>
+    <h1 class="logo-text" onclick="location.reload()">Global Teacher Catalog</h1>
+</header>
+
+<div class="filter-wrapper">
+    <div class="filter-container" id="filter-box">
+        <button class="filter-btn active" onclick="filterBy('All', this)">Tất cả</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="grid" class="grid"></div>
+</div>
+
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div class="modal-scroll-area">
+            <div class="modal-left">
+                <div id="m-video" class="video-box"></div>
+                <h3 class="exp-title">Kinh nghiệm & Bằng cấp</h3>
+                <div id="m-certs"></div>
+                <h3 class="bio-title">Giới thiệu chi tiết</h3>
+                <p id="m-bio" class="bio-text"></p>
+            </div>
+            <div class="modal-right" id="modal-action-area"></div>
+        </div>
+    </div>
+</div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxvfyDnZGIzoZ6puGR6MzPao8NQFu2pq0LjtTkFWlW_-q4GOXzJM1Eyq6AHZSZ7J4qU/exec";
@@ -71,14 +128,17 @@
     async function init() {
         try {
             const res = await fetch(`${API_URL}?cb=${Date.now()}`);
-            const rawData = await res.json();
-            // Lọc bỏ dòng trống từ dữ liệu gốc
-            teachers = rawData.filter(t => t.name && t.name.trim() !== "");
+            const data = await res.json();
+            
+            // LỌC DÒNG RỖNG: Chỉ lấy giáo viên có tên và ID hợp lệ
+            teachers = data.filter(t => t.name && t.name.trim() !== "" && t.name !== "N/A");
 
             const countries = [...new Set(teachers.map(t => t.country))].filter(Boolean);
             const filterBox = document.getElementById('filter-box');
             filterBox.innerHTML = '<button class="filter-btn active" onclick="filterBy(\'All\', this)">Tất cả</button>';
-            countries.forEach(c => { filterBox.innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`; });
+            countries.forEach(c => {
+                filterBox.innerHTML += `<button class="filter-btn" onclick="filterBy('${c}', this)">${c}</button>`;
+            });
 
             render(teachers);
         } catch (e) { 
@@ -90,17 +150,25 @@
     function render(list) {
         document.getElementById('grid').innerHTML = list.map(t => {
             const queueNum = parseInt(t.queue) || 0;
-            const isAvail = (t.status || "").toLowerCase() === 'available' || t.status === 'Sẵn sàng';
+            const lowStatus = (t.status || "").toLowerCase();
+            const isAvail = lowStatus === 'available' || lowStatus === 'sẵn sàng';
+            
             let statusLabel = queueNum > 0 ? `Hàng chờ: ${queueNum}` : (isAvail ? 'Sẵn sàng' : t.status);
             let statusColor = queueNum > 0 ? '#d97706' : (isAvail ? '#059669' : '#dc2626');
             let statusBg = queueNum > 0 ? '#fff7ed' : (isAvail ? '#ecfdf5' : '#fee2e2');
 
-            return `<div class="card" onclick="openModal('${t.id}')">
-                <div class="card-img-box"><img src="${t.img || 'https://via.placeholder.com/400x500'}" class="card-img" onerror="this.src='https://via.placeholder.com/400x500'">
-                <div class="badge-country">${t.country || ''}</div></div>
-                <div class="card-content"><span class="status-tag" style="background: ${statusBg}; color: ${statusColor};">${statusLabel}</span>
-                <h3 class="teacher-name">${t.name}</h3>
-                <div class="tags-container">${(t.cert || "").split(';').map(c => `<span class="tag">${c.trim()}</span>`).join('')}</div></div></div>`;
+            return `
+            <div class="card" onclick="openModal('${t.id}')">
+                <div class="card-img-box">
+                    <img src="${t.img || 'https://via.placeholder.com/400x500'}" class="card-img" onerror="this.src='https://via.placeholder.com/400x500'">
+                    <div class="badge-country">${t.country || ''}</div>
+                </div>
+                <div class="card-content">
+                    <span class="status-tag" style="background: ${statusBg}; color: ${statusColor};">${statusLabel}</span>
+                    <h3 class="teacher-name">${t.name || 'N/A'}</h3>
+                    <div class="tags-container">${(t.cert || "").split(';').map(c => `<span class="tag">${c.trim()}</span>`).join('')}</div>
+                </div>
+            </div>`;
         }).join('');
     }
 
@@ -112,44 +180,76 @@
 
     async function handleFormSubmit(e) {
         e.preventDefault();
-        const btn = e.target.querySelector('.btn-submit');
-        btn.disabled = true; btn.innerText = "ĐANG GỬI...";
+        const form = e.target;
+        const btn = form.querySelector('.btn-submit');
+        btn.disabled = true;
+        btn.innerText = "ĐANG GỬI...";
+
         try {
-            await fetch(API_URL, { method: 'POST', body: new URLSearchParams(new FormData(e.target)), mode: 'no-cors' });
-            alert("ĐĂNG KÝ THÀNH CÔNG!");
-            closeModal(); init();
-        } catch (error) { alert("Lỗi kết nối."); btn.disabled = false; btn.innerText = "XÁC NHẬN ĐĂNG KÝ"; }
+            const formData = new URLSearchParams(new FormData(form));
+            await fetch(API_URL, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            });
+
+            alert("ĐĂNG KÝ THÀNH CÔNG!\nSố hàng chờ sẽ được cập nhật ngay.");
+            closeModal();
+            init(); 
+        } catch (error) {
+            alert("Lỗi kết nối. Vui lòng thử lại.");
+            btn.disabled = false;
+            btn.innerText = "XÁC NHẬN ĐĂNG KÝ";
+        }
     }
 
     function openModal(id) {
         const t = teachers.find(x => x.id == id);
         if(!t) return;
+
         const queueNum = parseInt(t.queue) || 0;
         document.getElementById('m-bio').innerText = t.bio || "Đang cập nhật...";
         document.getElementById('m-certs').innerHTML = (t.cert || "").split(';').map(c => `<div class="exp-item"><div class="exp-bar"></div><span>${c.trim()}</span></div>`).join('');
-        const vId = getYoutubeId(t.video);
-        document.getElementById('m-video').innerHTML = vId ? `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white;">Video đang cập nhật</div>`;
         
-        const isAvail = (t.status || "").toLowerCase() === 'available' || t.status === 'Sẵn sàng';
+        const vId = getYoutubeId(t.video);
+        document.getElementById('m-video').innerHTML = vId ? `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vId}" frameborder="0" allowfullscreen></iframe>` : `<div style="height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b; color:white; font-size:13px;">Video đang cập nhật</div>`;
+
         const actionArea = document.getElementById('modal-action-area');
-        if (isAvail) {
-            actionArea.innerHTML = `<h2 class="form-title">Đặt lịch phỏng vấn</h2>
-                <div style="background:${queueNum > 0 ? '#fff7ed' : '#ecfdf5'}; padding:12px; border-radius:10px; margin-bottom:15px;"><p style="margin:0; font-size:13px; font-weight:600;">
-                ${queueNum > 0 ? `⚠️ Có ${queueNum} đơn vị đang chờ. Bạn ở số ${queueNum + 1}.` : `✅ Giáo viên đang sẵn sàng.`}</p></div>
-                <form onsubmit="handleFormSubmit(event)"><input type="hidden" name="Giao_Vien" value="${t.name}">
-                <div class="form-group"><label>Đơn vị *</label><input type="text" name="Don_Vi" required></div>
-                <div class="form-group"><label>Zalo *</label><input type="tel" name="Phone" required></div>
-                <div class="form-group"><label>Giờ mong muốn</label><input type="text" name="Time"></div>
-                <div class="form-group"><label>Ghi chú</label><textarea name="Note" rows="2"></textarea></div>
-                <button type="submit" class="btn-submit">XÁC NHẬN ĐĂNG KÝ</button></form>`;
+        const lowStatus = (t.status || "").toLowerCase();
+        
+        if (lowStatus === 'available' || lowStatus === 'sẵn sàng') {
+            actionArea.innerHTML = `
+                <h2 class="form-title">Đặt lịch phỏng vấn</h2>
+                <div style="background:${queueNum > 0 ? '#fff7ed' : '#ecfdf5'}; padding:12px; border-radius:10px; margin-bottom:15px; border:1px solid ${queueNum > 0 ? '#ffedd5' : '#d1fae5'};">
+                    <p style="margin:0; font-size:13px; color:${queueNum > 0 ? '#9a3412' : '#065f46'}; font-weight:600;">
+                        ${queueNum > 0 ? `⚠️ Hiện có ${queueNum} đơn vị đang chờ giáo viên này. Bạn sẽ ở vị trí số ${queueNum + 1}.` : `✅ Giáo viên hiện đang sẵn sàng.`}
+                    </p>
+                </div>
+                <form onsubmit="handleFormSubmit(event)">
+                    <input type="hidden" name="Giao_Vien" value="${t.name}">
+                    <div class="form-group"><label>Trung tâm / Đối tác *</label><input type="text" name="Don_Vi" required placeholder="Tên đơn vị của bạn"></div>
+                    <div class="form-group"><label>Số điện thoại Zalo *</label><input type="tel" name="Phone" required placeholder="09xx xxx xxx"></div>
+                    <div class="form-group"><label>Khung giờ phỏng vấn mong muốn</label><input type="text" name="Time" placeholder="Ví dụ: Sáng mai 10h"></div>
+                    <div class="form-group"><label>Ghi chú thêm</label><textarea name="Note" rows="2" placeholder="Yêu cầu cụ thể..."></textarea></div>
+                    <button type="submit" class="btn-submit">XÁC NHẬN ĐĂNG KÝ</button>
+                </form>`;
         } else {
-            actionArea.innerHTML = `<div class="booked-notice"><h3>GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT</h3><p>Giáo viên <b>${t.name}</b> hiện không khả dụng.</p></div>`;
+            actionArea.innerHTML = `
+                <div class="booked-notice">
+                    <h3 style="margin:0 0 10px 0; font-size: 1.2rem;">GIÁO VIÊN ĐÃ ĐƯỢC ĐẶT</h3>
+                    <p style="font-size: 14px; margin: 0;">Giáo viên <b>${t.name}</b> hiện không khả dụng để nhận thêm lịch.</p>
+                </div>`;
         }
         document.getElementById('modal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('m-video').innerHTML = ''; document.body.style.overflow = 'auto'; }
+    function closeModal() { 
+        document.getElementById('modal').style.display = 'none'; 
+        document.getElementById('m-video').innerHTML = '';
+        document.body.style.overflow = 'auto'; 
+    }
+
     init();
 </script>
 </body>
